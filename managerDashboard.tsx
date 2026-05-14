@@ -18,28 +18,6 @@ const ManagerDashboard = ({ products }: { products: any[] }) => {
 
   return (
     <div className="min-h-screen bg-[#f5f5f5]">
-      {/* 🔥 TOP HEADER */}
-      <div className="sticky top-0 z-50 bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {/* Title */}
-          <div>
-            <h1 className="text-2xl font-bold text-[#0f172a]">
-              Manager Dashboard
-            </h1>
-
-            <p className="text-sm text-gray-500">
-              Manage all grocery products easily
-            </p>
-          </div>
-
-          {/* Search */}
-          <div className="w-full md:w-[350px]">
-            <SearchBox onSearch={setSearch} />
-          </div>
-        </div>
-      </div>
-
-      {/* MAIN */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-5">
         {/* PRODUCT COUNT */}
         <div className="mb-5 flex items-center justify-between">
