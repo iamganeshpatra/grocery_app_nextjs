@@ -9,79 +9,142 @@ import ProductActions from "@/productActions";
 const ManagerDashboard = ({ products }: { products: any[] }) => {
   const [search, setSearch] = useState("");
 
-  const filteredProducts = products.filter((item) =>
-    item.product.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.product.brand?.toLowerCase().includes(search.toLowerCase()) ||
-    item.product.category.toLowerCase().includes(search.toLowerCase())
+  const filteredProducts = products.filter(
+    (item) =>
+      item.product.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.product.brand?.toLowerCase().includes(search.toLowerCase()) ||
+      item.product.category.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f5]">
+      {/* 🔥 TOP HEADER */}
+      <div className="sticky top-0 z-50 bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* Title */}
+          <div>
+            <h1 className="text-2xl font-bold text-[#0f172a]">
+              Manager Dashboard
+            </h1>
 
-      {/* 🔥 HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Manager Dashboard
-        </h1>
+            <p className="text-sm text-gray-500">
+              Manage all grocery products easily
+            </p>
+          </div>
 
-        {/* ✅ Search on right */}
-        <SearchBox onSearch={setSearch} />
+          {/* Search */}
+          <div className="w-full md:w-[350px]">
+            <SearchBox onSearch={setSearch} />
+          </div>
+        </div>
       </div>
 
-      {/* EMPTY STATE */}
-      {filteredProducts.length === 0 ? (
-        <div className="flex items-center justify-center h-[60vh]">
-          <p className="text-gray-500 text-lg">
-            No Products Found
-          </p>
+      {/* MAIN */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-5">
+        {/* PRODUCT COUNT */}
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-700">Products</h2>
+
+          <Badge className="bg-green-600 hover:bg-green-600 text-white px-3 py-1 rounded-full">
+            {filteredProducts.length} Items
+          </Badge>
         </div>
-      ) : (
 
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {/* EMPTY STATE */}
+        {filteredProducts.length === 0 ? (
+          <div className="flex items-center justify-center h-[60vh]">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-gray-700">
+                No Products Found
+              </h2>
 
-          {filteredProducts.map((item) => (
-            <Card key={item.product.id} className="rounded-2xl shadow hover:shadow-lg transition">
+              <p className="text-sm text-gray-500 mt-2">
+                Try searching with another keyword
+              </p>
+            </div>
+          </div>
+        ) : (
+          /* PRODUCT GRID */
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {filteredProducts.map((item) => (
+              <Card
+                key={item.product.id}
+                className="group overflow-hidden border border-gray-200 rounded-2xl bg-white hover:shadow-xl transition-all duration-300"
+              >
+                <CardContent className="p-0">
+                  {/* IMAGE */}
+                  <div className="relative bg-white h-40 sm:h-48 overflow-hidden">
+                    {item.product.imageUrl ? (
+                      <img
+                        src={item.product.imageUrl}
+                        alt={item.product.name}
+                        className="w-full h-full object-contain p-3 group-hover:scale-105 transition duration-300"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                        No Image
+                      </div>
+                    )}
 
-              <CardContent className="p-4 flex flex-col gap-3">
-
-                {/* Image */}
-                <div className="h-40 bg-gray-100 rounded-lg overflow-hidden">
-                  {item.imageUrl ? (
-                    <img src={item.product.imageUrl} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-gray-400">
-                      No Image
+                    {/* CATEGORY BADGE */}
+                    <div className="absolute top-2 left-2">
+                      <Badge className="bg-white text-gray-700 border shadow-sm text-[10px] sm:text-xs">
+                        {item.product.category}
+                      </Badge>
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                {/* Info */}
-                <div>
-                  <h2 className="font-semibold">{item.product.name}</h2>
-                  <p className="text-xs text-gray-500">
-                    {item.product.brand || "No Brand"}
-                  </p>
-                </div>
+                  {/* DETAILS */}
+                  <div className="p-3 flex flex-col gap-2">
+                    {/* NAME */}
+                    <div>
+                      <h2 className="font-semibold text-sm sm:text-base line-clamp-1 text-gray-800">
+                        {item.product.name}
+                      </h2>
 
-                <Badge>{item.product.category}</Badge>
+                      <p className="text-xs text-gray-500 line-clamp-1">
+                        {item.product.brand || "No Brand"}
+                      </p>
+                    </div>
 
-                <div className="flex justify-between">
-                  <span className="text-green-600 font-bold">
-                    ₹{item.product.price}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    Stock: {item.stock}
-                  </span>
-                </div>
+                    {/* PRICE + STOCK */}
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="flex flex-col">
+                        <span className="text-green-600 font-bold text-base sm:text-lg">
+                          ₹{item.product.price}
+                        </span>
 
-                <ProductActions id={item.product.id} />
+                        <span className="text-[11px] text-gray-400">
+                          Inclusive of all taxes
+                        </span>
+                      </div>
 
-              </CardContent>
-            </Card>
-          ))}
+                      <div className="text-right">
+                        <span
+                          className={`text-xs font-medium px-2 py-1 rounded-full ${
+                            item.stock > 10
+                              ? "bg-green-100 text-green-700"
+                              : item.stock > 0
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          Stock: {item.stock}
+                        </span>
+                      </div>
+                    </div>
 
-        </div>
-      )}
+                    {/* ACTIONS */}
+                    <div className="pt-2">
+                      <ProductActions id={item.product.id} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
