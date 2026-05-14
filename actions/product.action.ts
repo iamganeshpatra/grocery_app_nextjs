@@ -51,6 +51,15 @@ export async function CreateProduct({
 }
 
 export async function deleteProduct(id:string) {
+  const spRecordsCount = await prisma.shopProduct.count({
+    where:{
+      productId: id
+    }
+  })
+  if(spRecordsCount>0){
+    console.error("You cannnot delete this product as shops are using it for their stocks")
+    return
+  }
   const item=await prisma.product.delete({
     where:{id}
   })
@@ -74,6 +83,8 @@ export const addToCart=async(userId:string,productId:string)=>{
       where:{id:cartItem.id},
       data:{quantity:cartItem.quantity+1}
     })
+    revalidatePath("/customer");
+    revalidatePath("/customer/cart");
     return
   }
 
@@ -84,6 +95,8 @@ export const addToCart=async(userId:string,productId:string)=>{
       quantity:1
     }
   })
+  revalidatePath("/customer")
+  revalidatePath("/customer/cart")
 }
 
 export const removeToCart=async(userId:string,productId:string)=>{
@@ -100,6 +113,8 @@ export const removeToCart=async(userId:string,productId:string)=>{
         quantity:cartItem.quantity-1
       }
     })
+    revalidatePath("/customer");
+    revalidatePath("/customer/cart");
     return
   }
 
@@ -108,4 +123,6 @@ export const removeToCart=async(userId:string,productId:string)=>{
       id:cartItem.id
     }
   })
+  revalidatePath("/customer")
+  revalidatePath("/customer/cart")
 }

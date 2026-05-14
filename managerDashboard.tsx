@@ -10,9 +10,9 @@ const ManagerDashboard = ({ products }: { products: any[] }) => {
   const [search, setSearch] = useState("");
 
   const filteredProducts = products.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.brand?.toLowerCase().includes(search.toLowerCase()) ||
-    item.category.toLowerCase().includes(search.toLowerCase())
+    item.product.name.toLowerCase().includes(search.toLowerCase()) ||
+    item.product.brand?.toLowerCase().includes(search.toLowerCase()) ||
+    item.product.category.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -40,14 +40,14 @@ const ManagerDashboard = ({ products }: { products: any[] }) => {
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 
           {filteredProducts.map((item) => (
-            <Card key={item.id} className="rounded-2xl shadow hover:shadow-lg transition">
+            <Card key={item.product.id} className="rounded-2xl shadow hover:shadow-lg transition">
 
               <CardContent className="p-4 flex flex-col gap-3">
 
                 {/* Image */}
                 <div className="h-40 bg-gray-100 rounded-lg overflow-hidden">
                   {item.imageUrl ? (
-                    <img src={item.imageUrl} className="w-full h-full object-cover" />
+                    <img src={item.product.imageUrl} className="w-full h-full object-cover" />
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-400">
                       No Image
@@ -57,24 +57,24 @@ const ManagerDashboard = ({ products }: { products: any[] }) => {
 
                 {/* Info */}
                 <div>
-                  <h2 className="font-semibold">{item.name}</h2>
+                  <h2 className="font-semibold">{item.product.name}</h2>
                   <p className="text-xs text-gray-500">
-                    {item.brand || "No Brand"}
+                    {item.product.brand || "No Brand"}
                   </p>
                 </div>
 
-                <Badge>{item.category}</Badge>
+                <Badge>{item.product.category}</Badge>
 
                 <div className="flex justify-between">
                   <span className="text-green-600 font-bold">
-                    ₹{item.price}
+                    ₹{item.product.price}
                   </span>
                   <span className="text-sm text-gray-500">
                     Stock: {item.stock}
                   </span>
                 </div>
 
-                <ProductActions id={item.id} />
+                <ProductActions id={item.product.id} />
 
               </CardContent>
             </Card>

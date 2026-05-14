@@ -67,7 +67,7 @@ const CustomerNavbar = async () => {
 
             {totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs px-1.5 rounded-full">
-                {totalItems}
+                {totalItems > 99?"99+":totalItems}
               </span>
             )}
           </div>

@@ -24,8 +24,9 @@ model Product {
   updatedAt DateTime @updatedAt
 
   // Relations
-  carts      Cart[]
-  orderItems OrderItem[]
+  carts        Cart[]
+  orderItems   OrderItem[]
+  shopProducts ShopProduct[]
 
   @@map("product")
 }
@@ -46,9 +47,10 @@ model User {
   accounts Account[]
 
   // App Relations
-  addresses Address[]
-  orders    Order[]
-  carts     Cart[]
+  addresses    Address[]
+  orders       Order[]
+  carts        Cart[]
+  shopProducts ShopProduct[]
 
   @@unique([email])
   @@map("user")
@@ -191,4 +193,20 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   @@map("order_item")
+}
+
+model ShopProduct {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  stock Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("shop_product")
 }

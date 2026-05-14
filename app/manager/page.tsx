@@ -30,7 +30,11 @@ const ManagerDashboardPage = async () => {
     redirect("/unauthorized");
   }
 
-  const products = await prisma.product.findMany();
+  const products = await prisma.shopProduct.findMany({
+    include:{
+      product:true
+    }
+  });
 
   return <ManagerDashboard products={products} />;
 };

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { addToCart, removeToCart } from "./actions/product.action";
 import { Minus, Plus } from "lucide-react";
+import { useState } from "react";
 
 const AddAndRemoveCart = ({
   userId,
@@ -14,11 +15,14 @@ const AddAndRemoveCart = ({
   quantity: number;
 }) => {
 
+  const [updateQuantity,setUpdateQuantity]=useState(quantity)
+
   const router = useRouter();
 
   const handleAdd = async () => {
 
     if (!userId) return;
+    setUpdateQuantity((prev)=>prev+1)
 
     await addToCart(userId, productId);
 
@@ -28,6 +32,8 @@ const AddAndRemoveCart = ({
   const handleRemove = async () => {
 
     if (!userId) return;
+    if(quantity === 0)return
+    setUpdateQuantity((prev)=>prev-1)
 
     await removeToCart(userId, productId);
 
@@ -40,6 +46,7 @@ const AddAndRemoveCart = ({
       {/* Minus */}
       <button
         onClick={handleRemove}
+        disabled={quantity === 0}
         className="active:scale-90 transition"
       >
         <Minus className="w-4 h-4" />
@@ -47,7 +54,7 @@ const AddAndRemoveCart = ({
 
       {/* Quantity */}
       <span className="font-semibold text-sm min-w-[20px] text-center">
-        {quantity}
+        {updateQuantity}
       </span>
 
       {/* Plus */}
