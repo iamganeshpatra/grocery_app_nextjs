@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { Card, CardContent } from "@/components/ui/card";
 import AddAndRemoveCart from "@/addAndRemoveCart";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 const CartPage = async () => {
 
@@ -234,11 +235,11 @@ const CartPage = async () => {
               </div>
 
               {/* Checkout Button */}
-              <button className="w-full mt-6 bg-green-600 hover:bg-green-700 transition-all text-white py-3 rounded-2xl font-semibold text-lg">
+              <Link href="/customer/checkout" className="w-full mt-6 bg-green-600 hover:bg-green-700 transition-all text-white py-3 rounded-2xl font-semibold text-lg">
 
                 Proceed to Checkout
 
-              </button>
+              </Link>
 
               {/* Free Delivery Message */}
               {subtotal < 500 && (
