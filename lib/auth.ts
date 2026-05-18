@@ -16,18 +16,18 @@ export const auth = betterAuth({
       role: {
         type: "string",
         defaultValue: "CUSTOMER",
-        input: false,
+        required: true,
       },
     },
   },
 
   callbacks: {
-    session: async ({ session, user }: any) => {
+    session: ({ session, user }: any) => {
       return {
         ...session,
         user: {
           ...session.user,
-          role: user.role,
+          role: user?.role ?? "CUSTOMER",
         },
       };
     },

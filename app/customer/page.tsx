@@ -17,7 +17,7 @@ const CustomerDashboardPage = async () => {
   if (!sessionUser) {
     redirect("/signin");
   }
-  if (sessionUser.role !== "USER") {
+  if (sessionUser.role !== "CUSTOMER") {
     redirect("/signin");
   }
 

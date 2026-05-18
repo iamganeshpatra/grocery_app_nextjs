@@ -9,7 +9,6 @@ export default function SignInPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,12 +17,7 @@ export default function SignInPage() {
       setLoading(true);
       setError("");
 
-      if (!email || !password) {
-        setError("All fields are required");
-        return;
-      }
-
-      // ✅ LOGIN (BetterAuth)
+      // 1️⃣ LOGIN
       const res = await signIn.email({
         email,
         password,
@@ -34,10 +28,18 @@ export default function SignInPage() {
         return;
       }
 
-      // ✅ ROLE FROM LOGIN RESPONSE
-      const role = res.data.user.role;
+      // 2️⃣ GET SESSION (THIS CONTAINS ROLE)
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
 
-      // ✅ REDIRECT BASED ON ROLE
+      const role = session?.user?.role;
+
+      if (!role) {
+        setError("Role not found. Please check auth config.");
+        return;
+      }
+
+      // 3️⃣ ROLE ROUTING
       switch (role) {
         case "CUSTOMER":
           router.push("/customer");
@@ -60,7 +62,7 @@ export default function SignInPage() {
       }
     } catch (err) {
       console.log(err);
-      setError("Something went wrong");
+      setError("Something went wrong during login");
     } finally {
       setLoading(false);
     }
@@ -71,6 +73,7 @@ export default function SignInPage() {
       <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow">
         <h2 className="text-xl font-bold mb-4">Sign In</h2>
 
+        {/* EMAIL */}
         <input
           className="w-full border p-2 mb-3 rounded"
           placeholder="Email"
@@ -78,6 +81,7 @@ export default function SignInPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
 
+        {/* PASSWORD */}
         <input
           className="w-full border p-2 mb-3 rounded"
           type="password"
@@ -86,12 +90,14 @@ export default function SignInPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {/* ERROR */}
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
+        {/* BUTTON */}
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-green-600 text-white p-2 rounded disabled:opacity-60"
+          className="w-full bg-green-600 text-white p-2 rounded"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
