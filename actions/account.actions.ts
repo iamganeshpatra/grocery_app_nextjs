@@ -1,9 +1,8 @@
 "use server"
 
-import { Role } from "@/app/generated/prisma/enums"
 import { prisma } from "@/lib/db"
 
-export async function completeBuyerSignup(userId: string,role:Role){
+export async function completeBuyerSignup(userId: string){
 
     await prisma.user.update({
         where:{
