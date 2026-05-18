@@ -3,12 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "@/lib/auth-client";
 
-const SignInPage = () => {
+type Role = "CUSTOMER" | "SHOP_OWNER" | "SHOP_MANAGER" | "SUPER_ADMIN";
+
+const roleRoutes: Record<Role, string> = {
+  CUSTOMER: "/customer",
+  SHOP_OWNER: "/shop-owner",
+  SHOP_MANAGER: "/manager",
+  SUPER_ADMIN: "/admin",
+};
+
+export default function SignInPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -21,87 +27,72 @@ const SignInPage = () => {
       setLoading(true);
       setError("");
 
+      // 1️⃣ LOGIN
       const res = await signIn.email({
         email,
         password,
       });
 
-      if (!res || res.error) {
-        setError("Invalid email or password");
+      if (!res?.data?.user) {
+        setError(res?.error?.message || "Invalid email or password");
         return;
       }
 
-      router.push("/auth-redirect");
+      // 2️⃣ GET SESSION (ROLE COMES FROM HERE)
+      const sessionRes = await fetch("/api/auth/session", {
+        credentials: "include",
+      });
+
+      const session = await sessionRes.json();
+      const role = session?.user?.role as Role;
+
+      if (!role) {
+        setError("Role not found");
+        return;
+      }
+
+      // 3️⃣ REDIRECT BASED ON ROLE
+      router.push(roleRoutes[role] || "/");
     } catch (err) {
       console.log(err);
-      setError("Something went wrong");
+      setError("Server error. Try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md p-6 border rounded-xl">
+        <h2 className="text-xl font-bold mb-4">Sign In</h2>
 
-      <Card className="w-full max-w-md shadow-2xl rounded-2xl border-0">
+        <input
+          placeholder="Email"
+          className="w-full border p-2 mb-3"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-3xl font-bold text-gray-800">
-            Welcome Back 👋
-          </CardTitle>
-          <p className="text-sm text-gray-500">
-            Login to continue to your dashboard
-          </p>
-        </CardHeader>
+        <input
+          placeholder="Password"
+          type="password"
+          className="w-full border p-2 mb-3"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        <CardContent className="space-y-4">
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
-          <Input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-11"
-          />
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-full bg-green-600 text-white p-2"
+        >
+          {loading ? "Loading..." : "Sign In"}
+        </button>
 
-          <Input
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-11"
-          />
-
-          {error && (
-            <p className="text-red-500 text-sm font-medium">
-              {error}
-            </p>
-          )}
-
-          <Button
-            className="w-full h-11 bg-green-600 hover:bg-green-700 text-white font-semibold"
-            onClick={handleLogin}
-            disabled={loading}
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </Button>
-
-          {/* Signup Link (ADDED) */}
-          <p className="text-sm text-center text-gray-600">
-            Don’t have an account?{" "}
-            <Link
-              href="/signup"
-              className="text-green-600 font-medium hover:underline"
-            >
-              Create account
-            </Link>
-          </p>
-
-        </CardContent>
-
-      </Card>
+        <p className="mt-3 text-sm">
+          No account? <Link href="/signup">Signup</Link>
+        </p>
+      </div>
     </div>
   );
-};
-
-export default SignInPage;
+}
