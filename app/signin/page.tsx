@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, authClient } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
 
 export default function SignInPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,6 +18,12 @@ export default function SignInPage() {
       setLoading(true);
       setError("");
 
+      if (!email || !password) {
+        setError("All fields are required");
+        return;
+      }
+
+      // ✅ LOGIN (BetterAuth)
       const res = await signIn.email({
         email,
         password,
@@ -27,15 +34,30 @@ export default function SignInPage() {
         return;
       }
 
-      // ✅ FIXED
-      const session = await authClient.getSession();
-      const role = session?.data?.user?.role;
+      // ✅ ROLE FROM LOGIN RESPONSE
+      const role = res.data.user.role;
 
-      if (role === "CUSTOMER") router.push("/customer");
-      else if (role === "SHOP_OWNER") router.push("/shop-owner");
-      else if (role === "SHOP_MANAGER") router.push("/manager");
-      else if (role === "SUPER_ADMIN") router.push("/admin");
-      else router.push("/");
+      // ✅ REDIRECT BASED ON ROLE
+      switch (role) {
+        case "CUSTOMER":
+          router.push("/customer");
+          break;
+
+        case "SHOP_OWNER":
+          router.push("/shop-owner");
+          break;
+
+        case "SHOP_MANAGER":
+          router.push("/manager");
+          break;
+
+        case "SUPER_ADMIN":
+          router.push("/admin");
+          break;
+
+        default:
+          router.push("/");
+      }
     } catch (err) {
       console.log(err);
       setError("Something went wrong");
@@ -52,6 +74,7 @@ export default function SignInPage() {
         <input
           className="w-full border p-2 mb-3 rounded"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
@@ -59,6 +82,7 @@ export default function SignInPage() {
           className="w-full border p-2 mb-3 rounded"
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -67,7 +91,7 @@ export default function SignInPage() {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-green-600 text-white p-2 rounded"
+          className="w-full bg-green-600 text-white p-2 rounded disabled:opacity-60"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
