@@ -2,18 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "@/lib/auth-client";
 
-type Role = "CUSTOMER" | "SHOP_OWNER" | "SHOP_MANAGER" | "SUPER_ADMIN";
-
-const roleRoutes: Record<Role, string> = {
-  CUSTOMER: "/customer",
-  SHOP_OWNER: "/shop-owner",
-  SHOP_MANAGER: "/manager",
-  SUPER_ADMIN: "/admin",
-};
-
-export default function SignInPage() {
+const SignInPage = () => {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -26,72 +21,87 @@ export default function SignInPage() {
       setLoading(true);
       setError("");
 
-      // 1️⃣ LOGIN
       const res = await signIn.email({
         email,
         password,
       });
 
-      if (!res?.data?.user) {
+      if (!res || res.error) {
         setError("Invalid email or password");
         return;
       }
 
-      // 2️⃣ GET SESSION (role is here)
-      const sessionRes = await fetch("/api/auth/session");
-      const session = await sessionRes.json();
-
-      const role = session?.user?.role as Role;
-
-      if (!role) {
-        setError("Role not found. Please contact support.");
-        return;
-      }
-
-      // 3️⃣ REDIRECT (NO SWITCH)
-      router.push(roleRoutes[role] || "/");
+      router.push("/auth-redirect");
     } catch (err) {
       console.log(err);
-      setError("Something went wrong during login");
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow">
-        <h2 className="text-xl font-bold mb-4">Sign In</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
 
-        {/* EMAIL */}
-        <input
-          className="w-full border p-2 mb-3 rounded"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <Card className="w-full max-w-md shadow-2xl rounded-2xl border-0">
 
-        {/* PASSWORD */}
-        <input
-          className="w-full border p-2 mb-3 rounded"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-3xl font-bold text-gray-800">
+            Welcome Back 👋
+          </CardTitle>
+          <p className="text-sm text-gray-500">
+            Login to continue to your dashboard
+          </p>
+        </CardHeader>
 
-        {/* ERROR */}
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+        <CardContent className="space-y-4">
 
-        {/* BUTTON */}
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full bg-green-600 text-white p-2 rounded"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </div>
+          <Input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="h-11"
+          />
+
+          <Input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="h-11"
+          />
+
+          {error && (
+            <p className="text-red-500 text-sm font-medium">
+              {error}
+            </p>
+          )}
+
+          <Button
+            className="w-full h-11 bg-green-600 hover:bg-green-700 text-white font-semibold"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </Button>
+
+          {/* Signup Link (ADDED) */}
+          <p className="text-sm text-center text-gray-600">
+            Don’t have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-green-600 font-medium hover:underline"
+            >
+              Create account
+            </Link>
+          </p>
+
+        </CardContent>
+
+      </Card>
     </div>
   );
-}
+};
+
+export default SignInPage;

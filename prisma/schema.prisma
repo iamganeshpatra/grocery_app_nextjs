@@ -85,22 +85,15 @@ model Session {
 }
 
 model Account {
-  id         String @id
+  id String @id @default(cuid())
+
   accountId  String
-  providerId String
+  providerId String // MUST be "credential"
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  accessToken  String?
-  refreshToken String?
-  idToken      String?
-
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-
-  scope    String?
-  password String?
+  password String? // required for email/password login
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
