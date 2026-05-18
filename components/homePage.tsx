@@ -57,7 +57,7 @@ const SelectUserTypePage = () => {
             </Link>
 
             {/* Buyer */}
-            <Link href="/customer/signup">
+            <Link href="/signup/customer">
               <div className="group border rounded-3xl p-8 bg-white hover:bg-green-50 hover:border-green-500 transition cursor-pointer h-full">
                 <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mb-5 group-hover:scale-110 transition">
                   <ShoppingCart className="w-8 h-8 text-green-600" />

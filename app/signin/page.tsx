@@ -4,6 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 
+type Role = "CUSTOMER" | "SHOP_OWNER" | "SHOP_MANAGER" | "SUPER_ADMIN";
+
+const roleRoutes: Record<Role, string> = {
+  CUSTOMER: "/customer",
+  SHOP_OWNER: "/shop-owner",
+  SHOP_MANAGER: "/manager",
+  SUPER_ADMIN: "/admin",
+};
+
 export default function SignInPage() {
   const router = useRouter();
 
@@ -28,38 +37,19 @@ export default function SignInPage() {
         return;
       }
 
-      // 2️⃣ GET SESSION (THIS CONTAINS ROLE)
+      // 2️⃣ GET SESSION (role is here)
       const sessionRes = await fetch("/api/auth/session");
       const session = await sessionRes.json();
 
-      const role = session?.user?.role;
+      const role = session?.user?.role as Role;
 
       if (!role) {
-        setError("Role not found. Please check auth config.");
+        setError("Role not found. Please contact support.");
         return;
       }
 
-      // 3️⃣ ROLE ROUTING
-      switch (role) {
-        case "CUSTOMER":
-          router.push("/customer");
-          break;
-
-        case "SHOP_OWNER":
-          router.push("/shop-owner");
-          break;
-
-        case "SHOP_MANAGER":
-          router.push("/manager");
-          break;
-
-        case "SUPER_ADMIN":
-          router.push("/admin");
-          break;
-
-        default:
-          router.push("/");
-      }
+      // 3️⃣ REDIRECT (NO SWITCH)
+      router.push(roleRoutes[role] || "/");
     } catch (err) {
       console.log(err);
       setError("Something went wrong during login");
