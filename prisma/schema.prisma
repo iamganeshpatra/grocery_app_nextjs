@@ -31,10 +31,18 @@ model Product {
   @@map("product")
 }
 
+enum Role {
+  SUPER_ADMIN
+  SHOP_OWNER
+  SHOP_MANAGER
+  CUSTOMER
+}
+
 model User {
-  id            String  @id
+  id            String  @id @default(cuid())
   name          String
   email         String
+  password      String?
   role          String  @default("USER")
   emailVerified Boolean @default(false)
   image         String?
@@ -42,7 +50,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Auth Relations
   sessions Session[]
   accounts Account[]
 
@@ -51,6 +58,8 @@ model User {
   orders       Order[]
   carts        Cart[]
   shopProducts ShopProduct[]
+  shops        Shop[]        @relation("ShopOwner")
+  managedShops Shop[]        @relation("ShopManagers")
 
   @@unique([email])
   @@map("user")
@@ -209,4 +218,18 @@ model ShopProduct {
   updatedAt DateTime @updatedAt
 
   @@map("shop_product")
+}
+
+model Shop {
+  id       String @id @default(cuid())
+  name     String
+  category String
+
+  ownerId   String
+  owner     User     @relation("ShopOwner", fields: [ownerId], references: [id])
+  managers  User[]   @relation("ShopManagers")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("shop")
 }

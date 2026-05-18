@@ -17,20 +17,7 @@ const CustomerDashboardPage = async () => {
   if (!sessionUser) {
     redirect("/signin");
   }
-
-  // ✅ GET USER
-  const user = await prisma.user.findUnique({
-    where: {
-      id: sessionUser.id,
-    },
-  });
-
-  if (!user) {
-    redirect("/signin");
-  }
-
-  // ✅ ONLY USER ACCESS
-  if (user.role !== "USER") {
+  if (sessionUser.role !== "USER") {
     redirect("/signin");
   }
 
@@ -44,7 +31,7 @@ const CustomerDashboardPage = async () => {
   // ✅ USER CART ITEMS
   const cartItems = await prisma.cart.findMany({
     where: {
-      userId: user.id,
+      userId: sessionUser.id,
     },
   });
 
@@ -115,7 +102,7 @@ const CustomerDashboardPage = async () => {
                     {/* DETAILS */}
                     <div className="mt-3 flex flex-col flex-1">
                       {/* NAME */}
-                      <h2 className="font-semibold text-gray-800 text-sm sm:text-base line-clamp-2 min-h-[40px]">
+                      <h2 className="font-semibold text-gray-800 text-sm sm:text-base line-clamp-2 min-h-10">
                         {item.product.name}
                       </h2>
 
@@ -143,7 +130,7 @@ const CustomerDashboardPage = async () => {
                       {/* CART */}
                       <div className="mt-4">
                         <AddAndRemoveCart
-                          userId={user.id}
+                          userId={sessionUser.id}
                           productId={item.product.id}
                           quantity={cartItem?.quantity || 0}
                         />
