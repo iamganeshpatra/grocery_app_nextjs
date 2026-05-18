@@ -2,20 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { signIn, authClient } from "@/lib/auth-client";
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { signIn } from "@/lib/auth-client";
-
-const SignInPage = () => {
+export default function SignInPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,41 +17,25 @@ const SignInPage = () => {
       setLoading(true);
       setError("");
 
-      // validation
-      if (!email || !password) {
-        setError("All fields are required");
-        return;
-      }
-
       const res = await signIn.email({
         email,
         password,
       });
 
-      if (!res || res.error) {
+      if (!res?.data?.user) {
         setError("Invalid email or password");
         return;
       }
 
-      // get session (important for role-based redirect)
-      const session = await fetch("/api/auth/get-session").then((r) =>
-        r.json(),
-      );
+      // ✅ FIXED
+      const session = await authClient.getSession();
+      const role = session?.data?.user?.role;
 
-      const role = session?.user?.role;
-
-      // role-based redirect
-      if (role === "CUSTOMER") {
-        router.push("/customer");
-      } else if (role === "SHOP_OWNER") {
-        router.push("/shop-owner");
-      } else if (role === "SHOP_MANAGER") {
-        router.push("/manager");
-      } else if (role === "SUPER_ADMIN") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
+      if (role === "CUSTOMER") router.push("/customer");
+      else if (role === "SHOP_OWNER") router.push("/shop-owner");
+      else if (role === "SHOP_MANAGER") router.push("/manager");
+      else if (role === "SUPER_ADMIN") router.push("/admin");
+      else router.push("/");
     } catch (err) {
       console.log(err);
       setError("Something went wrong");
@@ -68,57 +45,33 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4">
-      <Card className="w-full max-w-md rounded-3xl border-0 shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-gray-800">
-            Welcome Back
-          </CardTitle>
-          <p className="text-sm text-gray-500">Sign in to continue</p>
-        </CardHeader>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md bg-white p-6 rounded-3xl shadow">
+        <h2 className="text-xl font-bold mb-4">Sign In</h2>
 
-        <CardContent className="space-y-4">
-          {/* EMAIL */}
-          <Input
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-11 rounded-xl"
-          />
+        <input
+          className="w-full border p-2 mb-3 rounded"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          {/* PASSWORD */}
-          <Input
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-11 rounded-xl"
-          />
+        <input
+          className="w-full border p-2 mb-3 rounded"
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          {/* ERROR */}
-          {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 
-          {/* BUTTON */}
-          <Button
-            onClick={handleLogin}
-            disabled={loading}
-            className="w-full h-11 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </Button>
-
-          {/* LINKS */}
-          <p className="text-sm text-center text-gray-500">
-            Don’t have an account?{" "}
-            <Link href="/signup" className="text-green-600 font-medium">
-              Sign Up
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-full bg-green-600 text-white p-2 rounded"
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </div>
     </div>
   );
-};
-
-export default SignInPage;
+}

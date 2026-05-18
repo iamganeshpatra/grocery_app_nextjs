@@ -43,7 +43,7 @@ model User {
   name          String
   email         String
   password      String?
-  role          String  @default("USER")
+  role          String  @default("CUSTOMER")
   emailVerified Boolean @default(false)
   image         String?
 

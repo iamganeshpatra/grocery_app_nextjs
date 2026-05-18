@@ -10,29 +10,24 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  user:{
-    additionalFields:{
-      role:{
-        type:"string",
-        required: false,
-        defaultValue:"CUSTOMER",
-        input:false
-      }
-    }
+
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "CUSTOMER",
+        input: false,
+      },
+    },
   },
+
   callbacks: {
-    session: async ({
-      session,
-      user,
-    }: {
-      session: any;
-      user: any;
-    }) => {
+    session: async ({ session, user }: any) => {
       return {
         ...session,
         user: {
           ...session.user,
-          role: user.role, // ✅ inject role into session
+          role: user.role,
         },
       };
     },
