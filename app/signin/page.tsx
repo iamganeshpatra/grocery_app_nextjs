@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
+import { signIn, authClient } from "@/lib/auth-client";
 
 type Role = "CUSTOMER" | "SHOP_OWNER" | "SHOP_MANAGER" | "SUPER_ADMIN";
 
@@ -38,20 +38,17 @@ export default function SignInPage() {
         return;
       }
 
-      // 2️⃣ GET SESSION (ROLE COMES FROM HERE)
-      const sessionRes = await fetch("/api/auth/session", {
-        credentials: "include",
-      });
+      // 2️⃣ GET SESSION (THIS HAS ROLE)
+      const session = await authClient.getSession();
 
-      const session = await sessionRes.json();
-      const role = session?.user?.role as Role;
+      const role = session?.data?.user?.role as Role;
 
       if (!role) {
-        setError("Role not found");
+        setError("Role not found in session");
         return;
       }
 
-      // 3️⃣ REDIRECT BASED ON ROLE
+      // 3️⃣ ROLE BASED REDIRECT
       router.push(roleRoutes[role] || "/");
     } catch (err) {
       console.log(err);
@@ -62,8 +59,8 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md p-6 border rounded-xl">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md p-6 border rounded-xl bg-white">
         <h2 className="text-xl font-bold mb-4">Sign In</h2>
 
         <input
@@ -84,13 +81,16 @@ export default function SignInPage() {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-green-600 text-white p-2"
+          className="w-full bg-green-600 text-white p-2 rounded"
         >
           {loading ? "Loading..." : "Sign In"}
         </button>
 
-        <p className="mt-3 text-sm">
-          No account? <Link href="/signup">Signup</Link>
+        <p className="mt-3 text-sm text-center">
+          No account?{" "}
+          <Link href="/signup" className="text-green-600">
+            Signup
+          </Link>
         </p>
       </div>
     </div>
