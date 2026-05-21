@@ -20,8 +20,7 @@ const ShopOwnerSignup=()=> {
     });
 
     if (!res?.data?.user?.id) return;
-
-    // 👇 YOUR SERVER ACTION
+    
     await completeSellerSignup(res.data.user.id);
 
     router.push("/shop-owner");

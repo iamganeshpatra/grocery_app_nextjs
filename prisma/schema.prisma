@@ -57,8 +57,10 @@ model User {
   orders       Order[]
   carts        Cart[]
   shopProducts ShopProduct[]
-  shops        Shop[]        @relation("ShopOwner")
-  managedShops Shop[]        @relation("ShopManagers")
+
+  shops Shop[] @relation("ShopOwner")
+
+  shopManagers ShopManager[]
 
   @@unique([email])
   @@map("user")
@@ -217,11 +219,28 @@ model Shop {
   name     String
   category String
 
-  ownerId   String
-  owner     User     @relation("ShopOwner", fields: [ownerId], references: [id])
-  managers  User[]   @relation("ShopManagers")
+  ownerId String
+  owner   User   @relation("ShopOwner", fields: [ownerId], references: [id])
+
+  shopManagers ShopManager[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("shop")
+}
+
+model ShopManager {
+  id String @id @default(cuid())
+
+  shopId String
+  userId String
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([shopId, userId])
 }

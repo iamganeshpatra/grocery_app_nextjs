@@ -50,7 +50,6 @@ const CreateProductClient = () => {
 
       // redirect
       router.push("/manager");
-
     } catch (err) {
       console.log(err);
       alert("Something went wrong ❌");
@@ -61,9 +60,7 @@ const CreateProductClient = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-
       <Card className="w-full max-w-2xl shadow-lg rounded-2xl">
-
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold">
             Add New Product
@@ -71,7 +68,6 @@ const CreateProductClient = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-
           <Input
             placeholder="Product Name"
             value={name}
@@ -133,10 +129,8 @@ const CreateProductClient = () => {
           >
             {loading ? "Creating..." : "Create Product"}
           </Button>
-
         </CardContent>
       </Card>
-
     </div>
   );
 };

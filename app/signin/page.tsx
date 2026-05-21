@@ -4,13 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, authClient } from "@/lib/auth-client";
+import { getManagerShop } from "@/actions/account.actions";
 
 type Role = "CUSTOMER" | "SHOP_OWNER" | "SHOP_MANAGER" | "SUPER_ADMIN";
 
-const roleRoutes: Record<Role, string> = {
+const roleRoutes: Record<string, string> = {
   CUSTOMER: "/customer",
   SHOP_OWNER: "/shop-owner",
-  SHOP_MANAGER: "/manager",
   SUPER_ADMIN: "/admin",
 };
 
@@ -38,18 +38,32 @@ export default function SignInPage() {
         return;
       }
 
-      // 2️⃣ GET SESSION (THIS HAS ROLE)
+      // 2️⃣ GET SESSION
       const session = await authClient.getSession();
 
-      const role = session?.data?.user?.role as Role;
+      const user = session?.data?.user;
 
-      if (!role) {
-        setError("Role not found in session");
+      if (!user) {
+        setError("User not found");
         return;
       }
 
-      // 3️⃣ ROLE BASED REDIRECT
-      router.push(roleRoutes[role] || "/");
+      // 3️⃣ SHOP MANAGER REDIRECT
+      if (user.role === "SHOP_MANAGER") {
+        const manager = await getManagerShop(user.id);
+
+        if (!manager) {
+          setError("No shop assigned");
+          return;
+        }
+
+        router.push(`/shop-owner/create-shop/${manager.shopId}`);
+
+        return;
+      }
+
+      // 4️⃣ OTHER ROLE REDIRECT
+      router.push(roleRoutes[user.role as keyof typeof roleRoutes] || "/");
     } catch (err) {
       console.log(err);
       setError("Server error. Try again later.");

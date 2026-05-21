@@ -1,4 +1,4 @@
-import CreateProductClient from "@/createProduct";
+import CreateProductClient from "@/components/create-products";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { headers } from "next/headers";
@@ -15,7 +15,7 @@ export default async function Page() {
     redirect("/signin");
   }
 
-  // 🔥 ALWAYS GET REAL USER FROM DB
+  // GET USER
   const user = await prisma.user.findUnique({
     where: {
       id: sessionUser.id,
@@ -26,7 +26,10 @@ export default async function Page() {
     redirect("/signin");
   }
 
-  if (user.role !== "ADMIN") {
+  // ONLY SHOP_OWNER & SHOP_MANAGER CAN ACCESS
+  const hasAccess = user.role === "SHOP_OWNER" || user.role === "SHOP_MANAGER";
+
+  if (!hasAccess) {
     redirect("/unauthorized");
   }
 

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Product, ShopProduct } from "../generated/prisma/client";
-import ProductAddCard from "./product-add-card";
 import { useSession } from "@/lib/auth-client";
 import { ShopProductWithProduct } from "@/lib/types";
 import { updateProduct } from "@/actions/product.action";
 import { toast } from "sonner";
+import { Product } from "@/app/generated/prisma/client";
+import ProductAddCard from "./product-add-to-cart";
 
 type AddProductsFromListProps = {
   products: Product[];

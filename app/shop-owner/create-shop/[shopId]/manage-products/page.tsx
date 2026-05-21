@@ -1,24 +1,52 @@
 import { prisma } from "@/lib/db";
-import AddProductsFromList from "./add-products-from-list";
 import {
   addShopProduct,
   updateShopProduct,
 } from "@/actions/shop-product.action";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import AddProductsFromList from "@/components/addProductsFromList";
 
 const ManageProducts = async () => {
-  const userSession = await auth.api.getSession({
+  const session = await auth.api.getSession({
     headers: await headers(),
   });
 
+  const sessionUser = session?.user;
+
+  // NOT LOGGED IN
+  if (!sessionUser) {
+    redirect("/signin");
+  }
+
+  // GET USER
+  const user = await prisma.user.findUnique({
+    where: {
+      id: sessionUser.id,
+    },
+  });
+
+  if (!user) {
+    redirect("/signin");
+  }
+
+  // ACCESS CONTROL
+  const hasAccess = user.role === "SHOP_OWNER" || user.role === "SHOP_MANAGER";
+
+  if (!hasAccess) {
+    redirect("/unauthorized");
+  }
+
+  // PRODUCTS
   const products = await prisma.product.findMany();
+
   const shopProducts = await prisma.shopProduct.findMany({
     include: {
       product: true,
     },
     where: {
-      userId: userSession?.user.id,
+      userId: sessionUser.id,
     },
   });
 
@@ -33,4 +61,5 @@ const ManageProducts = async () => {
     </div>
   );
 };
+
 export default ManageProducts;

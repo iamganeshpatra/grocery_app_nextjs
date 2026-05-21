@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { CreateShop } from "@/actions/shop-owner.actions";
 
 const CreateShopPage = () => {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
 
@@ -23,10 +26,8 @@ const CreateShopPage = () => {
         category,
       });
 
-      alert("Shop Created");
-
-      setName("");
-      setCategory("");
+      // ✅ redirect after create
+      router.push("/shop-owner");
     } catch (error) {
       console.log(error);
       alert("Failed to create shop");
