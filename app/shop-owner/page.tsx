@@ -1,6 +1,4 @@
-
 import Link from "next/link";
-
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -14,40 +12,31 @@ const ShopOwnerDashboardPage = async () => {
 
   const sessionUser = session?.user;
 
-  if (!sessionUser) {
-    redirect("/signin");
-  }
+  if (!sessionUser) redirect("/signin");
 
-  if (sessionUser.role !== "SHOP_OWNER") {
-    redirect("/signin");
-  }
+  if (sessionUser.role !== "SHOP_OWNER") redirect("/signin");
 
   const shops = await prisma.shop.findMany({
-    where: {
-      ownerId: sessionUser.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+    where: { ownerId: sessionUser.id },
+    orderBy: { createdAt: "desc" },
   });
-  return (
-    <div className="min-h-screen bg-[#f5f5f5] p-4 sm:p-6">
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            Shop Owner Dashboard
-          </h1>
 
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-6">
+      {/* HEADER */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Shop Dashboard 🏪
+          </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage your shops, managers and products
+            Manage your shops, products and business
           </p>
         </div>
 
-        {/* CREATE SHOP */}
         <Link
           href="/shop-owner/create-shop"
-          className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl text-sm font-medium text-center transition"
+          className="rounded-2xl bg-green-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-green-700 hover:scale-105"
         >
           + Create New Shop
         </Link>
@@ -55,64 +44,51 @@ const ShopOwnerDashboardPage = async () => {
 
       {/* SHOPS */}
       {shops.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shops.map((shop) => (
             <div
               key={shop.id}
-              className="bg-white rounded-3xl shadow-sm p-5 hover:shadow-md transition border border-gray-100"
+              className="group relative rounded-3xl border bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
-              {/* CLICKABLE SHOP AREA */}
+              {/* DELETE BUTTON */}
+              <div className="absolute right-4 top-4">
+                <DeleteShopButton shopId={shop.id} />
+              </div>
+
+              {/* SHOP LINK CONTENT */}
               <Link href={`/shop-owner/create-shop/${shop.id}`}>
-                <div className="cursor-pointer">
-                  {/* ICON */}
-                  <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center text-2xl">
+                <div>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-2xl shadow-sm">
                     🏪
                   </div>
 
-                  {/* SHOP INFO */}
-                  <h2 className="text-lg font-bold text-gray-800 mt-4">
+                  <h2 className="mt-4 text-lg font-bold text-gray-900 group-hover:text-green-600">
                     {shop.name}
                   </h2>
 
-                  <p className="text-sm text-gray-500 mt-1">{shop.category}</p>
+                  <p className="mt-1 text-sm text-gray-500">{shop.category}</p>
 
-                  {/* ACTION */}
-                  <div className="mt-5">
-                    <span className="text-sm text-green-600 font-medium">
-                      Open Shop →
-                    </span>
+                  <div className="mt-5 text-sm font-medium text-green-600">
+                    Open Shop →
                   </div>
                 </div>
               </Link>
-
-              {/* BUTTONS */}
-              <div className="mt-5 flex flex-col gap-3">
-                {/* ADD MANAGER */}
-                <Link
-                  href={`/shop-owner/shop/${shop.id}/create-manager`}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-center text-sm font-medium transition"
-                >
-                  Add Manager
-                </Link>
-                <DeleteShopButton shopId={shop.id} />
-              </div>
             </div>
           ))}
         </div>
       ) : (
-        /* EMPTY STATE */
-        <div className="bg-white rounded-3xl p-10 text-center shadow-sm border border-dashed border-gray-300">
-          <h2 className="text-lg font-semibold text-gray-700">
-            No Shops Created
+        <div className="rounded-3xl border border-dashed bg-white p-12 text-center">
+          <h2 className="text-lg font-semibold text-gray-800">
+            No Shops Found
           </h2>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="mt-2 text-sm text-gray-500">
             Start by creating your first shop
           </p>
 
           <Link
             href="/shop-owner/create-shop"
-            className="inline-block mt-5 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl text-sm font-medium transition"
+            className="mt-5 inline-block rounded-2xl bg-green-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-700"
           >
             Create Shop
           </Link>

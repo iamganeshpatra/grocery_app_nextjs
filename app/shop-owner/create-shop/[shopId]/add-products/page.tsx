@@ -4,7 +4,15 @@ import { prisma } from "@/lib/db";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function Page() {
+type Props = {
+  params: Promise<{
+    shopId: string;
+  }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { shopId } = await params;
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -15,7 +23,6 @@ export default async function Page() {
     redirect("/signin");
   }
 
-  // GET USER
   const user = await prisma.user.findUnique({
     where: {
       id: sessionUser.id,
@@ -26,12 +33,11 @@ export default async function Page() {
     redirect("/signin");
   }
 
-  // ONLY SHOP_OWNER & SHOP_MANAGER CAN ACCESS
   const hasAccess = user.role === "SHOP_OWNER" || user.role === "SHOP_MANAGER";
 
   if (!hasAccess) {
     redirect("/unauthorized");
   }
 
-  return <CreateProductClient />;
+  return <CreateProductClient shopId={shopId} />;
 }

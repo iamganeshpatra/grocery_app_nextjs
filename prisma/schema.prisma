@@ -199,12 +199,16 @@ model OrderItem {
 }
 
 model ShopProduct {
-  id        String  @id @default(cuid())
+  id String @id @default(cuid())
+
+  shopId String
+  shop   Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 
   stock Int
 
@@ -214,15 +218,17 @@ model ShopProduct {
   @@map("shop_product")
 }
 
+
 model Shop {
   id       String @id @default(cuid())
   name     String
   category String
 
   ownerId String
-  owner   User   @relation("ShopOwner", fields: [ownerId], references: [id])
+  owner   User @relation("ShopOwner", fields: [ownerId], references: [id])
 
   shopManagers ShopManager[]
+  shopProducts ShopProduct[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

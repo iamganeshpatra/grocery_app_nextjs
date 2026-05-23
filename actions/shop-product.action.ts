@@ -4,13 +4,14 @@ import { prisma } from "@/lib/db"
 import { ShopProductWithProduct } from "@/lib/types"
 
 
-export const addShopProduct = async (userId: string, productId: string):Promise<ShopProductWithProduct> =>{
+export const addShopProduct = async (userId: string, productId: string ,shopId:string):Promise<ShopProductWithProduct> =>{
    
     const shopProduct = await prisma.shopProduct.create({
         data:{
             userId,
             productId,
-            stock:0
+            stock:0,
+            shopId
         },
         include:{
             product: true

@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 
-const CreateProductClient = () => {
+type Props={
+  shopId:string
+}
+
+const CreateProductClient = ({shopId}:Props) => {
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -49,7 +53,7 @@ const CreateProductClient = () => {
       setImageUrl("");
 
       // redirect
-      router.push("/manager");
+      router.push(`/shop-owner/create-shop/${shopId}/manage-products`);
     } catch (err) {
       console.log(err);
       alert("Something went wrong ❌");

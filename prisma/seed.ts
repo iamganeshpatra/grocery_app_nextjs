@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 async function createAdmin(){
     const adminAccount = await prisma.user.findFirst({
         where:{
-            role: "ADMIN"
+            role: "SUPER_ADMIN"
         }
     })
     if(adminAccount) {
@@ -14,14 +14,14 @@ async function createAdmin(){
     }
     const userAccount = await auth.api.signUpEmail({
         body:{
-            email:"admin@admin.com",
+            email:"admin@sg0217.com",
             password: process.env.ADMIN_PASSWORD!,
             name:"Admin"
         }
     })
     await prisma.user.update({
         data:{
-            role:"ADMIN"
+            role:"SUPER_ADMIN"
         },
         where:{
             id: userAccount.user.id
