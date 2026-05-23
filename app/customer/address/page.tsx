@@ -27,7 +27,7 @@ const UserAddress=async()=>{
         redirect("/signin");
       }
     
-      if (user.role !== "USER") {
+      if (user.role !== "CUSTOMER") {
         redirect("/unauthorized");
       }
     

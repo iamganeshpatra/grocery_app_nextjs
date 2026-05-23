@@ -30,7 +30,7 @@ const CartPage = async () => {
         redirect("/signin");
       }
     
-      if (user.role !== "USER") {
+      if (user.role !== "CUSTOMER") {
         redirect("/signin");
       }  
   // Get Current User Cart

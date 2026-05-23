@@ -23,8 +23,8 @@ const AuthRedirectPage = async () => {
     redirect("/signin");
   }
 
-  if (user.role === "ADMIN") {
-    redirect("/manager");
+  if (user.role === "SHOP_OWNER") {
+    redirect("/shop-owner");
   }
 
   redirect("/customer");
