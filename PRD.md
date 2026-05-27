@@ -61,7 +61,7 @@ PENDING
   │       │                 │
   │       │                 └─► DELIVERED    ← Customer received the order
   │       │                           │
-  │       │                           └─► RETURN_REQUESTED ← Customer raises return (within 7 days)
+  │       │                    h       └─► RETURN_REQUESTED ← Customer raises return (within 7 days)
   │       │                                     │
   │       │                                     ├─► RETURN_APPROVED
   │       │                                     │         └─► REFUNDED  (cash, manual)

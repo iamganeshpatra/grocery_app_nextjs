@@ -1,8 +1,8 @@
-import CreateProductClient from "@/components/create-products";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import CreateProductClient from "./components/add-product";
 
 type Props = {
   params: Promise<{

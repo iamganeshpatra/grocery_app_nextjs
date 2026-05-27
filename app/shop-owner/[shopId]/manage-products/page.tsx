@@ -92,7 +92,7 @@ const ManageProducts = async ({ params }: Props) => {
 
             {/* ADD PRODUCT BUTTON */}
             <Link
-              href={`/shop-owner/create-shop/${shopId}/add-products`}
+              href={`/shop-owner/${shopId}/manage-products/add-products`}
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-sm font-semibold text-orange-600 shadow-lg transition hover:scale-105 hover:bg-orange-50"
             >
               <Plus className="h-5 w-5" />

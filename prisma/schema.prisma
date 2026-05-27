@@ -159,6 +159,19 @@ model Address {
   orders Order[]
 }
 
+enum Status{
+  PENDING
+  CONFIRMED
+  PREPARING
+  DISPATCHED
+  DELIVERED
+  RETURN_REQUESTED
+  RETURN_APPROVED
+  REFUNDED
+  RETURN_REJECTED
+  CANCELLED
+}
+
 model Order {
   id String @id @default(cuid())
 
@@ -170,7 +183,7 @@ model Order {
 
   totalAmount Float
 
-  status String @default("PENDING")
+  status Status @default(PENDING)
 
   items OrderItem[]
 

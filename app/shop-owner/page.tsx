@@ -56,7 +56,7 @@ const ShopOwnerDashboardPage = async () => {
               </div>
 
               {/* SHOP LINK CONTENT */}
-              <Link href={`/shop-owner/create-shop/${shop.id}`}>
+              <Link href={`/shop-owner/${shop.id}`}>
                 <div>
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-2xl shadow-sm">
                     🏪

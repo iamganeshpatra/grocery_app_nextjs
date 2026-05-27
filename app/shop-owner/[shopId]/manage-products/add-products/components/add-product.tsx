@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 
-type Props={
-  shopId:string
-}
+type Props = {
+  shopId: string;
+};
 
-const CreateProductClient = ({shopId}:Props) => {
+const CreateProductClient = ({ shopId }: Props) => {
   const router = useRouter();
 
   const [name, setName] = useState("");
