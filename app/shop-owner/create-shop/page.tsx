@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
-import CreateShopPage from "@/components/createShop";
+import CreateShopPage from "./components/create-shop";
 
 const CreateShop = async () => {
   const session = await auth.api.getSession({

@@ -23,7 +23,7 @@ const ShopOwnerSignup=()=> {
     
     await completeSellerSignup(res.data.user.id);
 
-    router.push("/shop-owner");
+    router.push("/auth-redirect");
   };
 
   return (

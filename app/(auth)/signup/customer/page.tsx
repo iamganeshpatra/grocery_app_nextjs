@@ -24,7 +24,7 @@ const CustomerSignup=()=> {
     // 👇 YOUR SERVER ACTION
     await completeBuyerSignup(res.data.user.id);
 
-    router.push("/customer");
+    router.push("/auth-redirect");
   };
 
   return (

@@ -1,24 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn, authClient } from "@/lib/auth-client";
-import { getManagerShop } from "@/actions/account.actions";
-
-type Role = "CUSTOMER" | "SHOP_OWNER" | "SHOP_MANAGER" | "SUPER_ADMIN";
-
-const roleRoutes: Record<string, string> = {
-  CUSTOMER: "/customer",
-  SHOP_OWNER: "/shop-owner",
-  SUPER_ADMIN: "/admin",
-};
+import { signIn } from "@/lib/auth-client";
 
 export default function SignInPage() {
-  const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,7 +16,7 @@ export default function SignInPage() {
       setLoading(true);
       setError("");
 
-      // 1️⃣ LOGIN
+      // ✅ LOGIN
       const res = await signIn.email({
         email,
         password,
@@ -38,32 +27,8 @@ export default function SignInPage() {
         return;
       }
 
-      // 2️⃣ GET SESSION
-      const session = await authClient.getSession();
-
-      const user = session?.data?.user;
-
-      if (!user) {
-        setError("User not found");
-        return;
-      }
-
-      // 3️⃣ SHOP MANAGER REDIRECT
-      if (user.role === "SHOP_MANAGER") {
-        const manager = await getManagerShop(user.id);
-
-        if (!manager) {
-          setError("No shop assigned");
-          return;
-        }
-
-        router.push(`/shop-owner/create-shop/${manager.shopId}`);
-
-        return;
-      }
-
-      // 4️⃣ OTHER ROLE REDIRECT
-      router.push(roleRoutes[user.role as keyof typeof roleRoutes] || "/");
+      // ✅ REDIRECT TO AUTH REDIRECT PAGE
+      window.location.href = "/auth-redirect";
     } catch (err) {
       console.log(err);
       setError("Server error. Try again later.");
@@ -73,36 +38,66 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-6 border rounded-xl bg-white">
-        <h2 className="text-xl font-bold mb-4">Sign In</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8">
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-green-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+            M
+          </div>
 
-        <input
-          placeholder="Email"
-          className="w-full border p-2 mb-3"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <h1 className="text-3xl font-bold mt-4 text-gray-800">
+            Welcome Back
+          </h1>
 
-        <input
-          placeholder="Password"
-          type="password"
-          className="w-full border p-2 mb-3"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <p className="text-sm text-gray-500 mt-2 text-center">
+            Sign in to continue shopping
+          </p>
+        </div>
 
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+        {/* Email */}
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700">Email</label>
 
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="w-full mt-2 border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        {/* Password */}
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700">Password</label>
+
+          <input
+            type="password"
+            placeholder="Enter your password"
+            className="w-full mt-2 border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {/* Error */}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+        {/* Button */}
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-green-600 text-white p-2 rounded"
+          className="w-full bg-green-600 hover:bg-green-700 transition-all text-white py-3 rounded-2xl font-semibold"
         >
-          {loading ? "Loading..." : "Sign In"}
+          {loading ? "Signing In..." : "Sign In"}
         </button>
 
-        <p className="mt-3 text-sm text-center">
-          No account?{" "}
-          <Link href="/" className="text-green-600">
+        {/* Signup */}
+        <p className="mt-5 text-sm text-center text-gray-500">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/"
+            className="text-green-600 font-semibold hover:underline"
+          >
             Signup
           </Link>
         </p>

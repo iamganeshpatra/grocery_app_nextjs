@@ -2,36 +2,28 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { ShopProductsManager } from "./components/shop-products-manager";
+import { ShopSubNav } from "@/components/shop-owner/shop-subnav";
 
-export default async function ShopProductsPage({
+export default async function ShopLayout({
+  children,
   params,
 }: {
+  children: React.ReactNode;
   params: Promise<{ shopId: string }>;
 }) {
   const { shopId } = await params;
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/signin");
+  if (!session || session.user.role !== "SHOP_OWNER") redirect("/unauthorized");
 
   const shop = await prisma.shop.findFirst({
     where: { id: shopId, ownerId: session.user.id },
   });
   if (!shop) notFound();
 
-  const inventory = await prisma.shopProduct.findMany({
-    where: { shopId },
-    include: { product: true },
-    orderBy: { createdAt: "desc" },
-  });
-
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Products</h1>
-      <ShopProductsManager
-        shopId={shopId}
-        initialInventory={inventory}
-        isOwner={true}
-      />
+      <ShopSubNav shopId={shopId} shopName={shop.name} />
+      <div className="max-w-7xl mx-auto p-6">{children}</div>
     </div>
   );
 }

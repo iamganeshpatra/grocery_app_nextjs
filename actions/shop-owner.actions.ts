@@ -8,31 +8,37 @@ import { revalidatePath } from "next/cache";
 type CreateShopType = {
   name: string;
   category: string;
+  description: string;
+  contactPhone: string;
 };
 
 export const CreateShop = async ({
   name,
   category,
+  description,
+  contactPhone,
 }: CreateShopType) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  // auth check
+  // AUTH CHECK
   if (!session?.user?.id) {
     throw new Error("Unauthorized");
   }
 
-  // role check
+  // ROLE CHECK
   if (session.user.role !== "SHOP_OWNER") {
     throw new Error("Access denied");
   }
 
-  // create shop
+  // CREATE SHOP
   const shop = await prisma.shop.create({
     data: {
       name,
       category,
+      description,
+      contactPhone,
       ownerId: session.user.id,
     },
   });
@@ -40,6 +46,64 @@ export const CreateShop = async ({
   return {
     success: true,
     shop,
+  };
+};
+
+export const updateShop = async (
+  shopId: string,
+  data: {
+    name: string;
+    category: string;
+    description?: string;
+    contactPhone?: string;
+  }
+) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  // AUTH CHECK
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // FIND SHOP
+  const shop = await prisma.shop.findUnique({
+    where: {
+      id: shopId,
+    },
+  });
+
+  // SHOP NOT FOUND
+  if (!shop) {
+    throw new Error("Shop not found");
+  }
+
+  // OWNER CHECK
+  if (shop.ownerId !== session.user.id) {
+    throw new Error("Access denied");
+  }
+
+  // UPDATE SHOP
+  const updatedShop = await prisma.shop.update({
+    where: {
+      id: shopId,
+    },
+    data: {
+      name: data.name.trim(),
+      category: data.category.trim(),
+      description: data.description?.trim() || null,
+      contactPhone: data.contactPhone?.trim() || null,
+    },
+  });
+
+  revalidatePath("/shop-owner");
+  revalidatePath(`/shop-owner/${shopId}`);
+  revalidatePath(`/shop-owner/${shopId}/edit`);
+
+  return {
+    success: true,
+    shop: updatedShop,
   };
 };
 

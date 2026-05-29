@@ -2,9 +2,9 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { ManagersPanel } from "./components/managers-panel";
+import { EditShopForm } from "../components/edit-shop-form";
 
-export default async function ShopManagersPage({
+export default async function EditShopPage({
   params,
 }: {
   params: Promise<{ shopId: string }>;
@@ -18,16 +18,10 @@ export default async function ShopManagersPage({
   });
   if (!shop) notFound();
 
-  const managers = await prisma.shopManager.findMany({
-    where: { shopId },
-    include: { user: { select: { id: true, name: true, email: true } } },
-    orderBy: { createdAt: "asc" },
-  });
-
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">Managers</h1>
-      <ManagersPanel shopId={shopId} initialManagers={managers} />
+      <h1 className="text-2xl font-bold mb-6">Edit Shop</h1>
+      <EditShopForm shop={shop} />
     </div>
   );
 }

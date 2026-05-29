@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import DeleteShopButton from "@/components/deleteShop";
+import DeleteShopButton from "@/components/shop-owner/deleteShop";
 
 const ShopOwnerDashboardPage = async () => {
   const session = await auth.api.getSession({
