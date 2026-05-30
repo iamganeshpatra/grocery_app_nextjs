@@ -70,8 +70,8 @@ grocery_app_nextjs/
 │   ├── profile/page.tsx                ← all roles: update name + change password
 │   ├── unauthorized/page.tsx
 │   │
-│   ├── admin/                          ← Sprint 2–3 (future)
-│   ├── shop-owner/                     ← Sprint 4–5 (this guide)
+│   ├── admin/                          ← doc 05 (catalog, users, shops, returns)
+│   ├── shop-owner/                     ← docs 04 + 08
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
 │   │   ├── new/page.tsx
@@ -80,10 +80,11 @@ grocery_app_nextjs/
 │   │       ├── page.tsx
 │   │       ├── edit/page.tsx
 │   │       ├── products/page.tsx
-│   │       └── managers/page.tsx
+│   │       ├── managers/page.tsx
+│   │       └── orders/                 ← doc 08
 │   │
-│   ├── manager/                        ← Sprint 5 (future)
-│   └── customer/                       ← Sprint 6–8 (future)
+│   ├── manager/                        ← docs 06 + 08
+│   └── customer/                       ← docs 07 + 09
 │
 ├── components/
 │   └── ui/                             ← shadcn primitives — NEVER edit these
@@ -257,11 +258,16 @@ Every protected route belongs under a role prefix:
 
 ## Guide Documents
 
-| # | Document | What It Covers |
-|---|----------|----------------|
-| 01 | [01-cleanup.md](./01-cleanup.md) | Delete old files, reset database |
-| 02 | [02-schema.md](./02-schema.md) | Full Prisma schema + migration |
-| 03 | [03-auth.md](./03-auth.md) | Authentication — all pages + proxy.ts |
-| 04 | [04-shop-owner.md](./04-shop-owner.md) | Shop owner — shop, products, managers |
+| # | Document | What It Covers | PRD Sprint |
+|---|----------|----------------|-----------|
+| 01 | [01-cleanup.md](./01-cleanup.md) | Delete old files, reset database | — |
+| 02 | [02-schema.md](./02-schema.md) | Full Prisma schema + migration | — |
+| 03 | [03-auth.md](./03-auth.md) | Authentication — all pages + proxy.ts | 1 |
+| 04 | [04-shop-owner.md](./04-shop-owner.md) | Shop owner — shop, products, managers | 4–5 |
+| 05 | [05-admin.md](./05-admin.md) | Seed, admin dashboard, catalog + import, users, shop visibility, returns overview | 2–3 |
+| 06 | [06-manager.md](./06-manager.md) | Manager dashboard + product management (reuses owner UI) | 5 |
+| 07 | [07-customer-shopping.md](./07-customer-shopping.md) | Customer browse, product detail, cart, checkout (one order per shop), addresses | 6 |
+| 08 | [08-fulfillment.md](./08-fulfillment.md) | Order status transitions, cancel, status history — owner + manager | 7 |
+| 09 | [09-customer-orders-returns.md](./09-customer-orders-returns.md) | Order tracking, customer cancel, returns, feedback | 8 |
 
-Start with `01-cleanup.md`.
+Start with `01-cleanup.md`. By the end of `09`, the platform is feature-complete against the PRD.
