@@ -403,23 +403,16 @@ export default async function AuthRedirectPage() {
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export default async function UnauthorizedPage({
+export default function UnauthorizedPage({
   searchParams,
 }: {
   searchParams: Promise<{ reason?: string }>
 }) {
-  const { reason } = await searchParams
-  const deactivated = reason === "deactivated"
-
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-4 p-8 text-center">
-      <h1 className="text-3xl font-bold">
-        {deactivated ? "Account Deactivated" : "Access Denied"}
-      </h1>
+      <h1 className="text-3xl font-bold">Access Denied</h1>
       <p className="text-muted-foreground max-w-md">
-        {deactivated
-          ? "Your account has been deactivated. Contact support."
-          : "You do not have permission to view this page."}
+        You do not have permission to view this page.
       </p>
       <Button asChild>
         <Link href="/signin">Back to Sign In</Link>

@@ -210,24 +210,8 @@ export async function removeProductFromShop(shopId: string, shopProductId: strin
   })
   if (!shop) return { error: "Shop not found" }
 
-  // Find the product behind this ShopProduct row
-  const shopProduct = await prisma.shopProduct.findUnique({ where: { id: shopProductId } })
-  if (!shopProduct) return { error: "Product not found in this shop" }
-
-  // PRD guard: block removal if this product is in any ACTIVE order
-  // (PENDING through DISPATCHED) for this shop. Allowed once every order
-  // containing it is DELIVERED, CANCELLED, or REFUNDED.
-  const ACTIVE_STATUSES = ["PENDING", "CONFIRMED", "PREPARING", "DISPATCHED"]
-  const activeOrderItem = await prisma.orderItem.findFirst({
-    where: {
-      shopId,
-      productId: shopProduct.productId,
-      order: { status: { in: ACTIVE_STATUSES as never } },
-    },
-  })
-  if (activeOrderItem) {
-    return { error: "This product is in active orders and cannot be removed yet." }
-  }
+  // Future sprint: check for active orders before allowing removal
+  // For now, allow removal freely
 
   await prisma.shopProduct.delete({ where: { id: shopProductId } })
 
@@ -503,8 +487,6 @@ export default async function ShopOwnerDashboard() {
         select: {
           shopProducts: true,
           shopManagers: true,
-          // Count only PENDING orders for the "needs attention" badge
-          orders: { where: { status: "PENDING" } },
         },
       },
     },
@@ -539,13 +521,8 @@ export default async function ShopOwnerDashboard() {
             <Link key={shop.id} href={`/shop-owner/${shop.id}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                 <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start gap-2">
+                  <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">{shop.name}</CardTitle>
-                    {shop._count.orders > 0 && (
-                      <Badge className="bg-yellow-500 text-white shrink-0">
-                        {shop._count.orders} pending
-                      </Badge>
-                    )}
                   </div>
                   <Badge variant="secondary" className="w-fit">
                     {shop.category}
@@ -868,31 +845,17 @@ export default async function ShopDashboardPage({
         select: {
           shopProducts: true,
           shopManagers: true,
+          orders: true,
         },
       },
     },
   })
   if (!shop) notFound()
 
-  // "Today" = from local midnight to now
-  const startOfToday = new Date()
-  startOfToday.setHours(0, 0, 0, 0)
-
-  const [ordersToday, revenueToday] = await Promise.all([
-    prisma.order.count({
-      where: { shopId, createdAt: { gte: startOfToday } },
-    }),
-    prisma.order.aggregate({
-      where: { shopId, status: "DELIVERED", updatedAt: { gte: startOfToday } },
-      _sum: { totalAmount: true },
-    }),
-  ])
-
   const stats = [
     { label: "Products in Inventory", value: shop._count.shopProducts },
     { label: "Managers", value: shop._count.shopManagers },
-    { label: "Orders Today", value: ordersToday },
-    { label: "Revenue Today", value: `₹${(revenueToday._sum.totalAmount ?? 0).toLocaleString("en-IN")}` },
+    { label: "Total Orders", value: shop._count.orders },
   ]
 
   return (
@@ -908,7 +871,7 @@ export default async function ShopDashboardPage({
         )}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardHeader className="pb-2">
