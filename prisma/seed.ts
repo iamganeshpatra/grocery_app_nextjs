@@ -1,68 +1,57 @@
-import { DUMMY_PRODUCTS } from "@/data/data";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/db"
+import { CATALOG } from "@/data/catalog"
 
-async function createAdmin(){
-    const adminAccount = await prisma.user.findFirst({
-        where:{
-            role: "SUPER_ADMIN"
-        }
-    })
-    if(adminAccount) {
-        console.info("Admin account already exist, so skipping this.")
-        return
-    }
-    const userAccount = await auth.api.signUpEmail({
-        body:{
-            email:"admin@sg0217.com",
-            password: process.env.ADMIN_PASSWORD!,
-            name:"Admin"
-        }
-    })
-    await prisma.user.update({
-        data:{
-            role:"SUPER_ADMIN"
-        },
-        where:{
-            id: userAccount.user.id
-        }
-    })
-    console.info("Admin user created with credentials admin@admin.com")
+async function createAdmin() {
+  const existing = await prisma.user.findFirst({ where: { role: "SUPER_ADMIN" } })
+  if (existing) {
+    console.info("Admin already exists — skipping.")
+    return
+  }
+
+  if (!process.env.ADMIN_PASSWORD) {
+    throw new Error("ADMIN_PASSWORD is not set in .env")
+  }
+
+  // Create the account through better-auth so the password is hashed into the account table
+  const result = await auth.api.signUpEmail({
+    body: {
+      email: "admin@grocery.com",
+      password: process.env.ADMIN_PASSWORD,
+      name: "Platform Admin",
+    },
+  })
+
+  await prisma.user.update({
+    where: { id: result.user.id },
+    data: { role: "SUPER_ADMIN", emailVerified: true },
+  })
+
+  console.info("Admin created → admin@grocery.com")
 }
 
+async function seedCatalog() {
+  const count = await prisma.product.count()
+  if (count > 0) {
+    console.info(`Catalog already has ${count} products — skipping.`)
+    return
+  }
 
-async function addProducts(){
-    const productCount = await prisma.product.count()
-    if(productCount > 0) {
-        console.info("Admin account already exist, so skipping this.")
-        return
-    }
-    await prisma.product.createMany({
-        data:DUMMY_PRODUCTS.map(i=>({
-            category: i.category,
-            name: i.name,
-            price:i.price,
-            quantity:i.quantity,
-            stock:i.stock,
-            brand: i.brand,
-            imageUrl: i.imageUrl
-        })) 
-    })
-    console.info("Products created")
+  await prisma.product.createMany({ data: CATALOG })
+  console.info(`Seeded ${CATALOG.length} products.`)
 }
 
-
-async function main(){
-    await createAdmin()
-    await addProducts()
+async function main() {
+  await createAdmin()
+  await seedCatalog()
 }
 
-main().then(()=>{
-    console.log("Seed ran successfully")
-}).catch(err =>{
-    console.error("Seed failed")
-    console.error(err)
-    
-}).finally(async()=>{
+main()
+  .then(() => console.info("Seed complete."))
+  .catch((err) => {
+    console.error("Seed failed:", err)
+    process.exitCode = 1
+  })
+  .finally(async () => {
     await prisma.$disconnect()
-})
+  })
