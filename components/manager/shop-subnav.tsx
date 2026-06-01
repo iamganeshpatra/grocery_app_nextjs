@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { label: "Dashboard", href: "" },
-  { label: "Products", href: "/manage-products" },
-  { label: "Managers", href: "/managers" },
+  { label: "Products", href: "/products" },
+  { label: "Orders", href: "/orders" },
 ];
 
-export function ShopSubNav({
+export function ManagerShopSubNav({
   shopId,
   shopName,
 }: {
@@ -18,14 +17,14 @@ export function ShopSubNav({
   shopName: string;
 }) {
   const pathname = usePathname();
-  const base = `/shop-owner/${shopId}`;
+  const base = `/manager/${shopId}`;
 
   return (
     <div className="border-b bg-muted/30">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center gap-1 pt-3">
           <Link
-            href="/shop-owner"
+            href="/manager"
             className="text-sm text-muted-foreground hover:text-foreground mr-3"
           >
             ← All Shops
@@ -34,9 +33,7 @@ export function ShopSubNav({
 
           {tabs.map((tab) => {
             const href = `${base}${tab.href}`;
-            const isActive =
-              tab.href === "" ? pathname === base : pathname.startsWith(href);
-
+            const isActive = pathname.startsWith(href);
             return (
               <Link
                 key={tab.href}
@@ -52,18 +49,6 @@ export function ShopSubNav({
               </Link>
             );
           })}
-
-          <Link
-            href={`${base}/edit`}
-            className={cn(
-              "px-3 py-2 text-sm border-b-2 transition-colors ml-auto",
-              pathname === `${base}/edit`
-                ? "border-foreground font-medium text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Edit Shop
-          </Link>
         </div>
       </div>
     </div>

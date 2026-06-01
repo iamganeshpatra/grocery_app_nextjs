@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { completeShopManagerSignup, removeManager } from "@/actions/managers.actions";
-import { set } from "zod";
+import { addManager, removeManager } from "@/actions/managers.actions";
 
 type Manager = {
   id: string; // ShopManager.id
@@ -36,7 +35,7 @@ export function ManagersPanel({
     setTempPassword(null);
 
     startAddTransition(async () => {
-      const result = await completeShopManagerSignup(shopId, email.trim());
+      const result = await addManager(shopId, email.trim());
 
       if (result.error) {
         toast.error(result.error);
@@ -51,6 +50,7 @@ export function ManagersPanel({
       }
 
       // Refresh manager list — easiest way without router.refresh() losing dialog state
+      
     });
   }
 
@@ -119,10 +119,7 @@ export function ManagersPanel({
                   onClick={() => {
                     navigator.clipboard.writeText(tempPassword);
                     toast.success("Copied!");
-
-                    setTimeout(()=>{
-                        window.location.reload()
-                    },1000)
+                    window.location.reload();
                   }}
                 >
                   Copy

@@ -298,7 +298,7 @@ const ShopDetailsPage = async ({ params }: Props) => {
               <div className="mt-8 space-y-4">
                 {user.role === "SHOP_OWNER" && (
                   <Link
-                    href={`/shop-owner/${shopId}/create-manager`}
+                    href={`/shop-owner/${shopId}/managers`}
                     className="flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-4 text-sm font-semibold text-white transition hover:bg-blue-700"
                   >
                     Create Manager

@@ -14,8 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { completeSellerSignup } from "@/actions/account.actions";
 
-export default function CustomerSignupPage() {
+export default function SellerSignupPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,7 @@ export default function CustomerSignupPage() {
       toast.error("Passwords do not match");
       return;
     }
+
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters");
       return;
@@ -39,6 +41,7 @@ export default function CustomerSignupPage() {
 
     setLoading(true);
 
+    // Step 1: Create the account (role defaults to CUSTOMER)
     const result = await signUp.email({
       email,
       password,
@@ -51,7 +54,15 @@ export default function CustomerSignupPage() {
       return;
     }
 
-    // Role is already CUSTOMER by default — go straight to redirect
+    // Step 2: Update role to SHOP_OWNER (only runs if signup succeeded)
+    const roleResult = await completeSellerSignup();
+    if (roleResult.error) {
+      toast.error("Account created but role update failed. Contact support.");
+      setLoading(false);
+      return;
+    }
+
+    // Step 3: Redirect — auth-redirect will read the updated role
     router.push("/auth-redirect");
   }
 
@@ -59,8 +70,10 @@ export default function CustomerSignupPage() {
     <main className="min-h-screen flex items-center justify-center p-8">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Create Customer Account</CardTitle>
-          <CardDescription>Shop from local grocery stores</CardDescription>
+          <CardTitle>Create Seller Account</CardTitle>
+          <CardDescription>
+            Start selling on Grocery Marketplace
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,7 +82,7 @@ export default function CustomerSignupPage() {
                 <label className="text-sm font-medium">First Name</label>
                 <Input
                   required
-                  placeholder="Jane"
+                  placeholder="John"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
@@ -90,7 +103,7 @@ export default function CustomerSignupPage() {
               <Input
                 type="email"
                 required
-                placeholder="jane@example.com"
+                placeholder="john@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -119,7 +132,7 @@ export default function CustomerSignupPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account..." : "Create Customer Account"}
+              {loading ? "Creating account..." : "Create Seller Account"}
             </Button>
           </form>
 

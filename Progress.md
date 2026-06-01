@@ -37,5 +37,5 @@ why also SUPER ADMIN is showing in user table because only access to see this pa
 
 
 **CONCLUSION**
-## i understand how the CRUD(create,read,update and delete) are working inside admin.actions.ts file and i also learned little bit use of useTrasition() but not properly doink like your code 
+## i understand how the CRUD(create,read,update and delete) are working inside admin.actions.ts file and i also learned little bit use of useTrasition() but not properly doing like your code 
 

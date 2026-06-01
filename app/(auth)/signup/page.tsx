@@ -29,7 +29,7 @@ export default function SignupPage() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href="/signup/shop-owner">Sign Up as Seller</Link>
+              <Link href="/signup/seller">Sign Up as Seller</Link>
             </Button>
           </CardContent>
         </Card>
