@@ -1492,3 +1492,9 @@ export async function clearMustChangePassword() {
 ```
 
 Now proceed to `04-shop-owner.md`.
+
+---
+
+## Known Mistake
+
+`proxy.ts` must be a **file** at the project root (same level as `next.config.ts`), not a folder. If you scaffold it as a directory (e.g. `proxy.ts/page.tsx`), Next.js will treat it as an app route and the proxy will never run — no role guards, no `mustChangePassword` redirect, nothing. If this happens, delete the directory and create `proxy.ts` as a plain file with the same content.

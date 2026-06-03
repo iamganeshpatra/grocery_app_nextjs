@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
-import bcrypt from "bcryptjs"
+import { hashPassword } from "@better-auth/utils/password"
 
 async function requireShopOwner(shopId: string) {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -58,7 +58,7 @@ export async function addManager(shopId: string, email: string) {
   // No existing user — create a new SHOP_MANAGER account
   const shopName = shop!.name
   const tempPassword = `Welcome@${shopName.replace(/\s+/g, "")}1`
-  const hashedPassword = await bcrypt.hash(tempPassword, 10)
+  const hashedPassword = await hashPassword(tempPassword)
 
   // Create user + account in two steps (no transaction — Supabase pool doesn't support it)
   const newUser = await prisma.user.create({

@@ -1785,4 +1785,22 @@ components/
 lib/
   auth.ts                                           (updated)
   auth-client.ts                                    (updated)
+
+---
+
+## Known Mistake
+
+In `actions/managers.actions.ts`, do **not** use `bcryptjs` to hash the temporary password. better-auth uses `scrypt` internally to verify passwords at login, so a bcrypt hash will always fail with "invalid credentials". Use `hashPassword` from `@better-auth/utils/password` instead:
+
+```typescript
+// Wrong
+import bcrypt from "bcryptjs"
+const hashedPassword = await bcrypt.hash(tempPassword, 10)
+
+// Correct
+import { hashPassword } from "@better-auth/utils/password"
+const hashedPassword = await hashPassword(tempPassword)
+```
+
+Any manager accounts created with the old bcrypt hash must be removed and re-added so a fresh scrypt hash is stored.
 ```
