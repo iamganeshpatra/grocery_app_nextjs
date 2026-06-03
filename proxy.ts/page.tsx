@@ -46,6 +46,7 @@ export default async function proxy(request: NextRequest) {
 
   // 4. Get the session
   const session = await auth.api.getSession({ headers: request.headers });
+  console.log("SESSION USER =>", session!.user);
 
   // 5. Not logged in → redirect to sign in
   if (!session) {

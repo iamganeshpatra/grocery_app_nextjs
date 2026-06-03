@@ -39,3 +39,21 @@ why also SUPER ADMIN is showing in user table because only access to see this pa
 **CONCLUSION**
 ## i understand how the CRUD(create,read,update and delete) are working inside admin.actions.ts file and i also learned little bit use of useTrasition() but not properly doing like your code 
 
+
+
+## MANAGER
+*Progress Report – 03 June 2026*
+
+-- Today I worked on the authentication and manager access flow of the Grocery App project.
+
+*Tasks Completed*
+->Learned about @better-auth/utils/password and understood how password hassing used to secure authentication
+->Doing some changes in Redirect-page because when Manager signin with temporary password that is not redirect to change-password path, I see the proxy.ts file everything redict properly but why change-password part is not redirect properly i can't understand
+
+*Learning & Understanding*
+->Improve understanding of password hassing and how secure authentication 
+->Betterly know about role based redict and access controls
+
+*Conclusion*
+>complete manager flow and temporary password changed to secure password 
+>Also testing my manager flow how it is workin

@@ -15,6 +15,9 @@ export default async function AuthRedirectPage() {
   if (!session) {
     redirect("/signin");
   }
+  if (session.user.mustChangePassword) {
+    redirect("/change-password");
+  }
 
   const role = session.user.role as string;
   const destination = ROLE_ROUTES[role] ?? "/signin";
