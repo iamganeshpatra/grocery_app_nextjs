@@ -1,5 +1,6 @@
 "use server"
 
+import { OrderStatus } from "@/app/generated/prisma/enums"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
@@ -70,7 +71,12 @@ export async function updateProduct(productId: string, data: ProductInput) {
   return { data: product }
 }
 
-const ACTIVE_STATUSES = ["PENDING", "CONFIRMED", "PREPARING", "DISPATCHED"] as const
+const ACTIVE_STATUSES: OrderStatus[] = [
+  OrderStatus.PENDING,
+  OrderStatus.CONFIRMED,
+  OrderStatus.PREPARING,
+  OrderStatus.DISPATCHED,
+]
 
 export async function deleteProduct(productId: string) {
   const { error } = await requireAdmin()
@@ -78,11 +84,15 @@ export async function deleteProduct(productId: string) {
 
   // Guard 1: block if the product is in any ACTIVE order
   const activeItem = await prisma.orderItem.findFirst({
-    where: {
-      productId,
-      order: { status: { in: ACTIVE_STATUSES as unknown as string[] } },
+  where: {
+    productId,
+    order: {
+      status: {
+        in: ACTIVE_STATUSES,
+      },
     },
-  })
+  },
+})
   if (activeItem) {
     return { error: "This product is in active orders and cannot be deleted." }
   }
