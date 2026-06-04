@@ -74,7 +74,7 @@ export async function updateProduct(id:string,data:any) {
   revalidatePath("/manager")
 }
 
-export const addToCart=async(userId:string,productId:string)=>{
+export const addToCart=async(userId:string,productId:string,shopId:string)=>{
   const cartItem=await prisma.cart.findFirst({
     where:{userId,productId}
   })
@@ -91,6 +91,7 @@ export const addToCart=async(userId:string,productId:string)=>{
   await prisma.cart.create({
     data:{
       userId,
+      shopId,
       productId,
       quantity:1
     }
