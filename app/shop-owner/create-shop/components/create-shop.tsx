@@ -58,8 +58,8 @@ export default function CreateShopPage() {
       contactPhone,
     });
 
-    if (result.error) {
-      toast.error(result.error);
+    if ("error" in result) {
+      toast.error(String(result.error));
       setLoading(false);
       return;
     }

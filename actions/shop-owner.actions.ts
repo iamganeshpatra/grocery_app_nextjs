@@ -46,7 +46,7 @@ export const CreateShop = async ({
   return {
     success: true,
     shop,
-  };
+  }
 };
 
 export const updateShop = async (
