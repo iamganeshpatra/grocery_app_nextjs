@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { forgetPassword } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { requestPasswordReset } from "@/lib/auth-client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     setLoading(true);
 
-    await forgetPassword({
+    await requestPasswordReset({
       email,
       redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
     });
