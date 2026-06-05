@@ -1,9 +1,9 @@
 import { createAuthClient } from "better-auth/react"
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  // No baseURL: requests go to the same origin the app is served from,
+  // so the dev port never matters.
 })
-console.log(Object.keys(authClient))
 
 export const {
   signIn,
