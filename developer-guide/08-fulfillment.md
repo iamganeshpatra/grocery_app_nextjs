@@ -264,6 +264,11 @@ export function OrdersTabBar({ basePath, showReturns }: { basePath: string; show
         <Button
           key={t.value}
           size="sm"
+      </table>
+    </div>
+  );
+}
+
           variant={current === t.value ? "default" : "outline"}
           onClick={() => router.push(`${basePath}?tab=${t.value}`)}
         >

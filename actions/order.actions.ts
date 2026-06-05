@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import type { OrderStatus } from "@/app/generated/prisma/enums"
 
 async function requireCustomer() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -129,4 +130,159 @@ export async function placeOrder(addressId: string) {
   revalidatePath("/customer/cart")
   revalidatePath("/customer/orders")
   return { data: { orders: createdOrders } }
+}
+
+
+// Linear forward transitions for shop staff
+const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
+  PENDING: "CONFIRMED",
+  CONFIRMED: "PREPARING",
+  PREPARING: "DISPATCHED",
+  DISPATCHED: "DELIVERED",
+}
+
+// Human-friendly label for the "next action" button
+export const NEXT_ACTION_LABEL: Partial<Record<OrderStatus, string>> = {
+  PENDING: "Confirm Order",
+  CONFIRMED: "Start Preparing",
+  PREPARING: "Mark Dispatched",
+  DISPATCHED: "Mark Delivered",
+}
+
+// Statuses at which an order may still be cancelled (before dispatch)
+const CANCELLABLE = ["PENDING", "CONFIRMED", "PREPARING"]
+
+// Verify the caller is the shop owner OR an assigned manager for this order's shop
+async function requireShopStaffForOrder(orderId: string) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) return { error: "Not authenticated" as const, session: null, order: null }
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { shop: { select: { ownerId: true } }, items: true },
+  })
+  if (!order) return { error: "Order not found" as const, session: null, order: null }
+
+  const role = session.user.role as string
+  if (role === "SHOP_OWNER") {
+    if (order.shop.ownerId !== session.user.id) {
+      return { error: "Not your shop" as const, session: null, order: null }
+    }
+  } else if (role === "SHOP_MANAGER") {
+    const assigned = await prisma.shopManager.findFirst({
+      where: { shopId: order.shopId, userId: session.user.id },
+    })
+    if (!assigned) return { error: "Not assigned to this shop" as const, session: null, order: null }
+  } else {
+    return { error: "Forbidden" as const, session: null, order: null }
+  }
+
+  return { error: null, session, order }
+}
+
+function revalidateOrder(shopId: string, orderId: string) {
+  revalidatePath(`/shop-owner/${shopId}/orders`)
+  revalidatePath(`/shop-owner/${shopId}/orders/${orderId}`)
+  revalidatePath(`/manager/${shopId}/orders`)
+  revalidatePath(`/manager/${shopId}/orders/${orderId}`)
+  revalidatePath(`/customer/orders/${orderId}`)
+}
+
+export async function advanceOrderStatus(orderId: string) {
+  const { error, session, order } = await requireShopStaffForOrder(orderId)
+  if (error) return { error }
+
+  const next = NEXT_STATUS[order!.status]
+  if (!next) return { error: "This order cannot be advanced further" }
+
+  await prisma.order.update({ where: { id: orderId }, data: { status: next } })
+  await prisma.orderStatusHistory.create({
+    data: {
+      orderId,
+      fromStatus: order!.status,
+      toStatus: next,
+      changedByUserId: session!.user.id,
+    },
+  })
+
+  revalidateOrder(order!.shopId, orderId)
+  return { data: { status: next } }
+}
+
+export async function cancelOrderByStaff(orderId: string, note: string) {
+  const { error, session, order } = await requireShopStaffForOrder(orderId)
+  if (error) return { error }
+
+  if (!CANCELLABLE.includes(order!.status)) {
+    return { error: "This order can no longer be cancelled" }
+  }
+  if (!note.trim()) return { error: "A cancellation note is required" }
+
+  // Restore stock for every item in the order
+  for (const item of order!.items) {
+    await prisma.shopProduct.updateMany({
+      where: { shopId: item.shopId, productId: item.productId },
+      data: { stock: { increment: item.quantity } },
+    })
+  }
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: "CANCELLED", cancellationNote: note.trim() },
+  })
+  await prisma.orderStatusHistory.create({
+    data: {
+      orderId,
+      fromStatus: order!.status,
+      toStatus: "CANCELLED",
+      changedByUserId: session!.user.id,
+      note: note.trim(),
+    },
+  })
+
+  revalidateOrder(order!.shopId, orderId)
+  return { success: true }
+}
+
+export async function customerCancelOrder(orderId: string) {
+  const { error, session } = await requireCustomer()
+  if (error) return { error }
+
+  const order = await prisma.order.findFirst({
+    where: { id: orderId, userId: session!.user.id },
+    include: { items: true },
+  })
+  if (!order) return { error: "Order not found" }
+
+  // Customers may only cancel BEFORE the shop confirms — i.e. at PENDING
+  if (order.status !== "PENDING") {
+    return { error: "This order can no longer be cancelled" }
+  }
+
+  // Restore stock
+  for (const item of order.items) {
+    await prisma.shopProduct.updateMany({
+      where: { shopId: item.shopId, productId: item.productId },
+      data: { stock: { increment: item.quantity } },
+    })
+  }
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: "CANCELLED", cancellationNote: "Cancelled by customer." },
+  })
+  await prisma.orderStatusHistory.create({
+    data: {
+      orderId,
+      fromStatus: "PENDING",
+      toStatus: "CANCELLED",
+      changedByUserId: session!.user.id,
+      note: "Cancelled by customer.",
+    },
+  })
+
+  revalidatePath("/customer/orders")
+  revalidatePath(`/customer/orders/${orderId}`)
+  revalidatePath(`/shop-owner/${order.shopId}/orders`)
+  return { success: true }
 }

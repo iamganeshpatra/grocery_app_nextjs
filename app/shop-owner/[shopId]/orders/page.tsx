@@ -6,7 +6,7 @@ import { statusesForTab } from "@/lib/order-filters";
 import { OrdersTabBar } from "@/components/shop/orders-tab-bar";
 import { OrdersTable } from "@/components/shop/orders-table";
 
-export default async function ManagerOrdersPage({
+export default async function ShopOwnerOrdersPage({
   params,
   searchParams,
 }: {
@@ -18,10 +18,10 @@ export default async function ManagerOrdersPage({
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/signin");
 
-  const assignment = await prisma.shopManager.findFirst({
-    where: { shopId, userId: session.user.id },
+  const shop = await prisma.shop.findFirst({
+    where: { id: shopId, ownerId: session.user.id },
   });
-  if (!assignment) notFound();
+  if (!shop) notFound();
 
   const statuses = statusesForTab(tab);
   const orders = await prisma.order.findMany({
@@ -36,10 +36,9 @@ export default async function ManagerOrdersPage({
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      {/* No Returns tab for managers */}
-      <OrdersTabBar basePath={`/manager/${shopId}/orders`} />
+      <OrdersTabBar basePath={`/shop-owner/${shopId}/orders`} showReturns />
       <OrdersTable
-        basePath={`/manager/${shopId}/orders`}
+        basePath={`/shop-owner/${shopId}/orders`}
         orders={orders.map((o) => ({
           id: o.id,
           customerName: o.user.name,
