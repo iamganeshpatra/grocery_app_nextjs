@@ -14,7 +14,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "./status-badge";
 import { StatusTimeline } from "./status-timeline";
 import { NEXT_ACTION_LABEL } from "@/actions/order.constants";
-import { advanceOrderStatus, cancelOrderByStaff } from "@/actions/order.actions";
+import {
+  advanceOrderStatus,
+  cancelOrderByStaff,
+} from "@/actions/order.actions";
 
 export type OrderItem = {
   id: string;
@@ -72,13 +75,14 @@ export function OrderDetail({
   const [note, setNote] = useState("");
   const [showReject, setShowReject] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-
+  console.log(order, canManageReturns);
   const nextLabel =
     NEXT_ACTION_LABEL[order.status as keyof typeof NEXT_ACTION_LABEL];
 
   function run(fn: () => Promise<{ error?: string }>, successMsg: string) {
     startTransition(async () => {
       const result = await fn();
+
       if (result.error) {
         toast.error(result.error);
         return;

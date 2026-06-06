@@ -24,5 +24,6 @@ export default async function ShopOwnerOrderDetailPage({
   const data = await loadOrderDetail(orderId);
   if (!data) notFound();
 
-  return <OrderDetail order={data} />;
+  return <OrderDetail order={data}
+          canManageReturns />;
 }
