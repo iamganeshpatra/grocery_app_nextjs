@@ -4,11 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  advanceOrderStatus,
-  cancelOrderByStaff,
-  NEXT_ACTION_LABEL,
-} from "@/actions/order.actions";
-import {
   approveReturn,
   rejectReturn,
   markRefunded,
@@ -18,6 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "./status-badge";
 import { StatusTimeline } from "./status-timeline";
+import { NEXT_ACTION_LABEL } from "@/actions/order.constants";
+import { advanceOrderStatus, cancelOrderByStaff } from "@/actions/order.actions";
 
 export type OrderItem = {
   id: string;

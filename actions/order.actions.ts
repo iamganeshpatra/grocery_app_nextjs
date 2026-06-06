@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
-import type { OrderStatus } from "@/app/generated/prisma/enums"
+import { CANCELLABLE, NEXT_STATUS } from "./order.constants"
 
 async function requireCustomer() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -133,24 +133,6 @@ export async function placeOrder(addressId: string) {
 }
 
 
-// Linear forward transitions for shop staff
-const NEXT_STATUS: Partial<Record<OrderStatus, OrderStatus>> = {
-  PENDING: "CONFIRMED",
-  CONFIRMED: "PREPARING",
-  PREPARING: "DISPATCHED",
-  DISPATCHED: "DELIVERED",
-}
-
-// Human-friendly label for the "next action" button
-export const NEXT_ACTION_LABEL: Partial<Record<OrderStatus, string>> = {
-  PENDING: "Confirm Order",
-  CONFIRMED: "Start Preparing",
-  PREPARING: "Mark Dispatched",
-  DISPATCHED: "Mark Delivered",
-}
-
-// Statuses at which an order may still be cancelled (before dispatch)
-const CANCELLABLE = ["PENDING", "CONFIRMED", "PREPARING"]
 
 // Verify the caller is the shop owner OR an assigned manager for this order's shop
 async function requireShopStaffForOrder(orderId: string) {
