@@ -8,6 +8,7 @@ export async function loadOrderDetail(orderId: string): Promise<OrderDetailData 
       shop: { select: { name: true } },
       user: { select: { name: true } },
       items: true,
+      returnRequest: true,
       statusHistory: {
         orderBy: { changedAt: "asc" },
         include: { changedBy: { select: { name: true } } },
@@ -24,25 +25,36 @@ export async function loadOrderDetail(orderId: string): Promise<OrderDetailData 
   }
 
   return {
-    id: order.id,
-    shopName: order.shop.name,
-    status: order.status,
-    totalAmount: order.totalAmount,
-    cancellationNote: order.cancellationNote,
-    createdAt: order.createdAt.toISOString(),
-    customerName: order.user.name,
-    address,
-    items: order.items.map((i) => ({
-      id: i.id,
-      productName: i.productName,
-      quantity: i.quantity,
-      unitPrice: i.unitPrice,
-      subtotal: i.subtotal,
-    })),
-    history: order.statusHistory.map((h) => ({
-      toStatus: h.toStatus,
-      changedAt: h.changedAt.toISOString(),
-      changedByName: h.changedBy.name,
-    })),
-  }
+  id: order.id,
+  shopName: order.shop.name,
+  status: order.status,
+  totalAmount: order.totalAmount,
+  cancellationNote: order.cancellationNote,
+  createdAt: order.createdAt.toISOString(),
+  customerName: order.user.name,
+  address,
+
+  items: order.items.map((i) => ({
+    id: i.id,
+    productName: i.productName,
+    quantity: i.quantity,
+    unitPrice: i.unitPrice,
+    subtotal: i.subtotal,
+  })),
+
+  history: order.statusHistory.map((h) => ({
+    toStatus: h.toStatus,
+    changedAt: h.changedAt.toISOString(),
+    changedByName: h.changedBy.name,
+  })),
+
+  returnRequest: order.returnRequest
+    ? {
+        status: order.returnRequest.status,
+        reason: order.returnRequest.reason,
+        description: order.returnRequest.description,
+        rejectionReason: order.returnRequest.rejectionReason,
+      }
+    : null,
+}
 }
