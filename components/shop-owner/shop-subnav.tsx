@@ -22,19 +22,39 @@ export function ShopSubNav({
   const base = `/shop-owner/${shopId}`;
 
   return (
-    <div className="border-b bg-muted/30">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center gap-1 pt-3">
+    <div className="sticky top-0 z-20 border-b border-green-200 bg-gradient-to-r from-green-50 via-white to-lime-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        {/* Top Row */}
+        <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center">
           <Link
             href="/shop-owner"
-            className="text-sm text-muted-foreground hover:text-foreground mr-3"
+            className="text-sm font-medium text-green-700 hover:text-green-900"
           >
             ← All Shops
           </Link>
-          <span className="text-sm font-semibold mr-4">{shopName}</span>
 
+          <div className="truncate rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-800">
+            🛒 {shopName}
+          </div>
+
+          <Link
+            href={`${base}/edit`}
+            className={cn(
+              "sm:ml-auto rounded-lg px-4 py-2 text-sm font-medium transition",
+              pathname === `${base}/edit`
+                ? "bg-amber-500 text-white"
+                : "border border-amber-300 bg-white text-amber-700 hover:bg-amber-50",
+            )}
+          >
+            ✏️ Edit Shop
+          </Link>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide">
           {tabs.map((tab) => {
             const href = `${base}${tab.href}`;
+
             const isActive =
               tab.href === "" ? pathname === base : pathname.startsWith(href);
 
@@ -43,28 +63,16 @@ export function ShopSubNav({
                 key={tab.href}
                 href={href}
                 className={cn(
-                  "px-3 py-2 text-sm border-b-2 transition-colors",
+                  "whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition",
                   isActive
-                    ? "border-foreground font-medium text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
+                    ? "bg-green-600 text-white shadow"
+                    : "text-gray-600 hover:bg-green-100 hover:text-green-700",
                 )}
               >
                 {tab.label}
               </Link>
             );
           })}
-
-          <Link
-            href={`${base}/edit`}
-            className={cn(
-              "px-3 py-2 text-sm border-b-2 transition-colors ml-auto",
-              pathname === `${base}/edit`
-                ? "border-foreground font-medium text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground",
-            )}
-          >
-            Edit Shop
-          </Link>
         </div>
       </div>
     </div>

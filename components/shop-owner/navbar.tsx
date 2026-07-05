@@ -16,28 +16,44 @@ export function ShopOwnerNavbar({ userName }: { userName: string }) {
   }
 
   return (
-    <header className="border-b bg-white sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/shop-owner" className="font-semibold text-lg">
-            🛒 Grocery Market
+    <header className="sticky top-0 z-50 border-b border-green-100 bg-white shadow-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        {/* Left */}
+        <div className="flex items-center gap-3 sm:gap-8">
+          <Link href="/shop-owner" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-700 text-xl shadow-md">
+              🛒
+            </div>
+
+            <h1 className="text-xl font-extrabold tracking-wide">
+              <span className="bg-gradient-to-r from-emerald-600 via-green-500 to-lime-500 bg-clip-text text-transparent">
+                Market
+              </span>
+              <span className="text-orange-500">Place</span>
+            </h1>
           </Link>
+
           <Link
             href="/shop-owner"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="hidden rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition hover:bg-emerald-50 hover:text-emerald-600 sm:block"
           >
             My Shops
           </Link>
         </div>
 
+        {/* Right */}
         <div className="flex items-center gap-3">
           <Link
             href="/profile"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="max-width: 120px; truncate rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
           >
-            {userName}
+            👤 {userName}
           </Link>
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
+
+          <Button
+            onClick={handleSignOut}
+            className="rounded-full bg-orange-500 px-5 text-white hover:bg-orange-600"
+          >
             Sign Out
           </Button>
         </div>
