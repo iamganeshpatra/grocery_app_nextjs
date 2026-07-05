@@ -21,14 +21,12 @@ export function ShopOwnerNavbar({ userName }: { userName: string }) {
         {/* Left */}
         <div className="flex items-center gap-3 sm:gap-8">
           <Link href="/shop-owner" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-700 text-xl shadow-md">
-              🛒
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-orange-500 text-xl shadow-md">
+              Mp
             </div>
 
             <h1 className="text-xl font-extrabold tracking-wide">
-              <span className="bg-gradient-to-r from-emerald-600 via-green-500 to-lime-500 bg-clip-text text-transparent">
-                Market
-              </span>
+              <span className="text-blue-500">Market</span>
               <span className="text-orange-500">Place</span>
             </h1>
           </Link>

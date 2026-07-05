@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { signUp } from "@/lib/auth-client";
+import { completeSellerSignup } from "@/actions/account.actions";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { completeSellerSignup } from "@/actions/account.actions";
 
 export default function SellerSignupPage() {
   const router = useRouter();
@@ -41,7 +42,6 @@ export default function SellerSignupPage() {
 
     setLoading(true);
 
-    // Step 1: Create the account (role defaults to CUSTOMER)
     const result = await signUp.email({
       email,
       password,
@@ -54,94 +54,147 @@ export default function SellerSignupPage() {
       return;
     }
 
-    // Step 2: Update role to SHOP_OWNER (only runs if signup succeeded)
     const roleResult = await completeSellerSignup();
+
     if (roleResult.error) {
-      toast.error("Account created but role update failed. Contact support.");
+      toast.error("Account created but role update failed.");
       setLoading(false);
       return;
     }
 
-    // Step 3: Redirect — auth-redirect will read the updated role
     router.push("/auth-redirect");
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-8">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Create Seller Account</CardTitle>
-          <CardDescription>
-            Start selling on Grocery Marketplace
+    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-100 flex items-center justify-center px-4 py-8">
+      <Card className="w-full max-w-lg rounded-3xl border-0 bg-white/90 shadow-2xl backdrop-blur">
+        <CardHeader className="space-y-4 text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-600 to-emerald-500 text-4xl shadow-lg">
+            🏪
+          </div>
+
+          <CardTitle className="bg-gradient-to-r from-green-700 via-emerald-600 to-lime-500 bg-clip-text text-3xl font-extrabold text-transparent">
+            Create Seller Account
+          </CardTitle>
+
+          <CardDescription className="text-base text-gray-500">
+            Open your grocery store online and start selling to local customers.
           </CardDescription>
         </CardHeader>
+
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-sm font-medium">First Name</label>
+          {/* Quote */}
+          <div className="mb-6 rounded-2xl border border-green-100 bg-green-50 p-4 text-center">
+            <p className="text-sm italic text-green-700 sm:text-base">
+              🌱 "Every successful grocery business begins with fresh products
+              and happy customers."
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-green-700">
+                  First Name
+                </label>
+
                 <Input
                   required
                   placeholder="John"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
+                  className="rounded-xl border-green-200 focus-visible:ring-green-500"
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Last Name</label>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-green-700">
+                  Last Name
+                </label>
+
                 <Input
                   required
                   placeholder="Doe"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
+                  className="rounded-xl border-green-200 focus-visible:ring-green-500"
                 />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Email</label>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-green-700">
+                Email Address
+              </label>
+
               <Input
                 type="email"
                 required
                 placeholder="john@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="rounded-xl border-green-200 focus-visible:ring-green-500"
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Password</label>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-green-700">
+                Password
+              </label>
+
               <Input
                 type="password"
                 required
                 placeholder="Minimum 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="rounded-xl border-green-200 focus-visible:ring-green-500"
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Confirm Password</label>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-green-700">
+                Confirm Password
+              </label>
+
               <Input
                 type="password"
                 required
                 placeholder="Repeat password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                className="rounded-xl border-green-200 focus-visible:ring-green-500"
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="h-12 w-full rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 text-base font-semibold text-white shadow-lg hover:from-green-700 hover:to-emerald-600"
+            >
               {loading ? "Creating account..." : "Create Seller Account"}
             </Button>
           </form>
 
-          <p className="text-sm text-center text-muted-foreground mt-4">
-            Already have an account?{" "}
-            <Link href="/signin" className="underline">
-              Sign in
-            </Link>
-          </p>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                href="/signin"
+                className="font-semibold text-green-600 hover:text-green-700"
+              >
+                Sign In
+              </Link>
+            </p>
+
+            <div className="mt-5 flex flex-wrap justify-center gap-2 text-xs text-gray-400">
+              <span>🏪 Grow Your Shop</span>
+              <span>•</span>
+              <span>📦 Manage Products</span>
+              <span>•</span>
+              <span>🚚 Receive Orders</span>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </main>
