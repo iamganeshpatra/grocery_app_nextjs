@@ -66,7 +66,7 @@ export default function SellerSignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-100 flex items-center justify-center px-4 py-8">
+    <main className="min-h-screen bg-gradient-to-br from-green-700 via-green-600 to-emerald-500 flex items-center justify-center px-4 py-8">
       <Card className="w-full max-w-lg rounded-3xl border-0 bg-white/90 shadow-2xl backdrop-blur">
         <CardHeader className="space-y-4 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-600 to-emerald-500 text-4xl shadow-lg">

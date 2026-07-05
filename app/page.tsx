@@ -62,11 +62,10 @@ export default function LandingPage() {
 
           <h1 className="mt-6 text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
             Fresh Groceries
-            <br />
             Delivered to <span className="text-yellow-300">Your Doorstep</span>
           </h1>
 
-          <p className="mt-6 text-base leading-7 text-green-100 sm:text-lg">
+          <p className="mt-6 text-base leading-7 text-blue-100 sm:text-lg">
             Shop fresh fruits, vegetables, dairy products, snacks and daily
             essentials from trusted local grocery stores with lightning-fast
             delivery.

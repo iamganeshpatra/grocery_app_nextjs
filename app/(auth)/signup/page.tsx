@@ -10,18 +10,18 @@ import {
 
 export default function SignupPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-100 px-4 py-8 sm:px-6 sm:py-12">
+    <main className="min-h-screen bg-gradient-to-br from-green-700 via-green-600 to-emerald-500 px-4 py-8 sm:px-6 sm:py-12">
       {/* Header */}
       <div className="mx-auto max-w-3xl text-center">
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-600 text-3xl shadow-lg sm:h-20 sm:w-20 sm:text-4xl">
-          🛒
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-800 to-green-600 text-3xl shadow-lg sm:h-20 sm:w-20 sm:text-4xl">
+          Mp
         </div>
 
-        <h1 className="bg-gradient-to-r from-emerald-600 via-green-500 to-lime-500 bg-clip-text text-3xl font-extrabold leading-tight text-transparent sm:text-5xl">
+        <h1 className="bg-blue-800 bg-clip-text text-3xl font-extrabold leading-tight text-transparent sm:text-5xl">
           Join MarketPlace
         </h1>
 
-        <p className="mt-3 text-base text-gray-600 sm:text-lg">
+        <p className="mt-3 text-base text-gray-900 sm:text-lg">
           Choose how you'd like to get started.
         </p>
 
