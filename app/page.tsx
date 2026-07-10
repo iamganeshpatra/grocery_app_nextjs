@@ -26,7 +26,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-700 via-green-600 to-emerald-500 text-white">
+    <main className="min-h-screen bg-white text-black">
       <section className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-5 py-6 sm:px-8 lg:px-16">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -62,10 +62,10 @@ export default function LandingPage() {
 
           <h1 className="mt-6 text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
             Fresh Groceries
-            Delivered to <span className="text-yellow-300">Your Doorstep</span>
+            Delivered to <span className="text-green-600">Your Doorstep</span>
           </h1>
 
-          <p className="mt-6 text-base leading-7 text-blue-100 sm:text-lg">
+          <p className="mt-6 text-base leading-7 text-black sm:text-lg">
             Shop fresh fruits, vegetables, dairy products, snacks and daily
             essentials from trusted local grocery stores with lightning-fast
             delivery.
@@ -78,7 +78,7 @@ export default function LandingPage() {
             "Healthy food is not an expense, it's an investment."
           </p>
 
-          <p className="mt-3 text-sm italic text-green-100">
+          <p className="mt-3 text-sm italic text-red-600">
             "Fresh ingredients make every meal unforgettable."
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function LandingPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-10 text-center text-sm text-green-100">
+        <div className="mt-10 text-center text-sm text-green-600">
           🌱 Fresh Products • 🚚 Fast Delivery • ⭐ Trusted Local Shops
         </div>
       </section>

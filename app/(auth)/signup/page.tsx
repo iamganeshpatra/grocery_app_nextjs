@@ -10,7 +10,7 @@ import {
 
 export default function SignupPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-700 via-green-600 to-emerald-500 px-4 py-8 sm:px-6 sm:py-12">
+    <main className="min-h-screen px-4 py-8 sm:px-6 sm:py-12">
       {/* Header */}
       <div className="mx-auto max-w-3xl text-center">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-800 to-green-600 text-3xl shadow-lg sm:h-20 sm:w-20 sm:text-4xl">
@@ -102,13 +102,13 @@ export default function SignupPage() {
           Already have an account?{" "}
           <Link
             href="/signin"
-            className="font-semibold text-emerald-600 hover:text-emerald-700"
+            className="font-semibold text-gray-800 hover:text-emerald-700"
           >
             Sign In
           </Link>
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-400 sm:text-sm">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-900 sm:text-sm">
           <span>🌱 Fresh Products</span>
           <span>•</span>
           <span>🚚 Fast Delivery</span>
