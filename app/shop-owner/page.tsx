@@ -27,7 +27,7 @@ const ShopOwnerDashboardPage = async () => {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Shop Dashboard 🏪
+            Seller Dashboard 🏪
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Manage your shops, products and business
